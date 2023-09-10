@@ -2,7 +2,7 @@ package com.myprojects.reciper.ui.recipes_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myprojects.reciper.data.RecipesRepository
+import com.myprojects.reciper.data.RecipeRepository
 import com.myprojects.reciper.util.Routes
 import com.myprojects.reciper.util.UIEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecipesListViewModel @Inject constructor(
-    private val repository: RecipesRepository
+    private val repository: RecipeRepository
 ) : ViewModel() {
 
     val recipes = repository.getRecipesList()

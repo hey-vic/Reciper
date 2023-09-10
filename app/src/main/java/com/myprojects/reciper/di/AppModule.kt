@@ -2,9 +2,9 @@ package com.myprojects.reciper.di
 
 import android.app.Application
 import androidx.room.Room
-import com.myprojects.reciper.data.RecipesDatabase
-import com.myprojects.reciper.data.RecipesRepository
-import com.myprojects.reciper.data.RecipesRepositoryImpl
+import com.myprojects.reciper.data.RecipeDatabase
+import com.myprojects.reciper.data.RecipeRepository
+import com.myprojects.reciper.data.RecipeRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,17 +17,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRecipesDatabase(app: Application): RecipesDatabase {
+    fun provideRecipesDatabase(app: Application): RecipeDatabase {
         return Room.databaseBuilder(
             app,
-            RecipesDatabase::class.java,
+            RecipeDatabase::class.java,
             "recipes"
         ).build()
     }
 
     @Provides
     @Singleton
-    fun provideRecipesRepository(db: RecipesDatabase): RecipesRepository {
-        return RecipesRepositoryImpl(db.dao)
+    fun provideRecipesRepository(db: RecipeDatabase): RecipeRepository {
+        return RecipeRepositoryImpl(db.dao)
     }
 }

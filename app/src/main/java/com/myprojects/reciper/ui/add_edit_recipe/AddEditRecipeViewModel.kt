@@ -7,7 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myprojects.reciper.data.Recipe
-import com.myprojects.reciper.data.RecipesRepository
+import com.myprojects.reciper.data.RecipeRepository
 import com.myprojects.reciper.util.UIEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditRecipeViewModel @Inject constructor(
-    private val repository: RecipesRepository,
+    private val repository: RecipeRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

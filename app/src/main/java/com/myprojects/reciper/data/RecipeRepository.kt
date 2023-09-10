@@ -2,7 +2,7 @@ package com.myprojects.reciper.data
 
 import kotlinx.coroutines.flow.Flow
 
-interface RecipesRepository {
+interface RecipeRepository {
 
     suspend fun upsertRecipe(recipe: Recipe)
 

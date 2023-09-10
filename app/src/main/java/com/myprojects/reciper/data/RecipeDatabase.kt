@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
     entities = [Recipe::class],
     version = 1
 )
-abstract class RecipesDatabase : RoomDatabase() {
+abstract class RecipeDatabase : RoomDatabase() {
 
     abstract val dao: RecipeDao
 }

@@ -2,9 +2,9 @@ package com.myprojects.reciper.data
 
 import kotlinx.coroutines.flow.Flow
 
-class RecipesRepositoryImpl(
+class RecipeRepositoryImpl(
     private val dao: RecipeDao
-) : RecipesRepository {
+) : RecipeRepository {
     override suspend fun upsertRecipe(recipe: Recipe) {
         dao.upsertRecipe(recipe)
     }

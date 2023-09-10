@@ -1,23 +1,22 @@
 package com.myprojects.reciper.data
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RecipeDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsertRecipe(recipe: Recipe)
 
-    @Query("SELECT * FROM recipes WHERE id = :id")
+    @Query("SELECT * FROM recipe WHERE id = :id")
     suspend fun getRecipeById(id: Int): Recipe?
 
-    @Query("SELECT * FROM recipes")
+    @Query("SELECT * FROM recipe")
     fun getRecipesList(): Flow<List<Recipe>>
 
-    @Query("DELETE FROM recipes WHERE id = :recipeId")
+    @Query("DELETE FROM recipe WHERE id = :recipeId")
     suspend fun deleteRecipeById(recipeId: Int)
 }

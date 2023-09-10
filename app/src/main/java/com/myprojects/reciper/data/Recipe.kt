@@ -3,7 +3,7 @@ package com.myprojects.reciper.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "recipes")
+@Entity
 data class Recipe(
     val title: String,
     val details: String,
