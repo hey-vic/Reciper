@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.myprojects.reciper.R
@@ -73,7 +74,6 @@ fun AddEditRecipeScreen(
                     contentDescription = "Save"
                 )
             }
-
         }
     ) {
         Column(
@@ -148,7 +148,7 @@ fun CustomTextField(
         },
         modifier = modifier
             .background(color = Color.White, shape = RoundedCornerShape(16.dp)),
-        singleLine = true,
+        singleLine = false,
         colors = TextFieldDefaults.textFieldColors(
             containerColor = Color.White,
             focusedIndicatorColor = Color.Transparent,
@@ -157,7 +157,9 @@ fun CustomTextField(
         shape = RoundedCornerShape(16.dp),
         textStyle = TextStyle(
             fontFamily = montserratFamily,
-            fontWeight = FontWeight.Medium
-        )
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Start
+        ),
+        maxLines = maxLines
     )
 }
