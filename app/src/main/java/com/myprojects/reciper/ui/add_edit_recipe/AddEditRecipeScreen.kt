@@ -2,6 +2,7 @@ package com.myprojects.reciper.ui.add_edit_recipe
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,17 +13,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,15 +51,20 @@ fun AddEditRecipeScreen(
     onPopBackStack: () -> Unit,
     viewModel: AddEditRecipeViewModel = hiltViewModel()
 ) {
-    val snackbarHostState = SnackbarHostState()
+    val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UIEvent.PopBackStack -> onPopBackStack()
                 is UIEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(
+                    val result = snackbarHostState.showSnackbar(
                         message = event.message,
+                        actionLabel = event.action,
+                        duration = SnackbarDuration.Short
                     )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        viewModel.onEvent(AddEditRecipeEvent.OnUndoDeleteClick)
+                    }
                 }
 
                 else -> Unit
@@ -81,7 +94,25 @@ fun AddEditRecipeScreen(
                 .fillMaxSize()
                 .background(BackgroundGray)
         ) {
-            CustomToolbar()
+            Box(modifier = Modifier.fillMaxWidth()) {
+                CustomToolbar()
+                viewModel.recipe?.let {
+                    IconButton(
+                        onClick = {
+                            viewModel.onEvent(AddEditRecipeEvent.OnDeleteRecipeClick)
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                            tint = Color.White,
+                            contentDescription = "Delete"
+                        )
+                    }
+                }
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()

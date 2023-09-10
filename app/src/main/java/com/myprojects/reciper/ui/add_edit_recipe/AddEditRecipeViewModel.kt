@@ -39,6 +39,8 @@ class AddEditRecipeViewModel @Inject constructor(
     private val _uiEvent = Channel<UIEvent> { }
     val uiEvent = _uiEvent.receiveAsFlow()
 
+    private var deletedRecipe: Recipe? = null
+
     init {
         val recipeId = savedStateHandle.get<Int>("recipeId")!!
         if (recipeId != -1) {
@@ -70,6 +72,30 @@ class AddEditRecipeViewModel @Inject constructor(
 
             is AddEditRecipeEvent.OnTitleChange -> {
                 title = event.title
+            }
+
+            is AddEditRecipeEvent.OnDeleteRecipeClick -> {
+                recipe?.let { recipe ->
+                    viewModelScope.launch {
+                        repository.deleteRecipeById(recipe.id!!)
+                        deletedRecipe = recipe
+                        sendUiEvent(
+                            UIEvent.ShowSnackbar(
+                                message = "Recipe deleted",
+                                action = "Undo"
+                            )
+                        )
+                        sendUiEvent(UIEvent.PopBackStack)
+                    }
+                }
+            }
+
+            is AddEditRecipeEvent.OnUndoDeleteClick -> {
+                deletedRecipe?.let { recipe ->
+                    viewModelScope.launch {
+                        repository.upsertRecipe(recipe)
+                    }
+                }
             }
 
             AddEditRecipeEvent.OnSaveRecipeClick -> {

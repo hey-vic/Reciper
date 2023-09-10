@@ -9,4 +9,6 @@ interface RecipesRepository {
     suspend fun getRecipeById(id: Int): Recipe?
 
     fun getRecipesList(): Flow<List<Recipe>>
+
+    suspend fun deleteRecipeById(recipeId: Int)
 }

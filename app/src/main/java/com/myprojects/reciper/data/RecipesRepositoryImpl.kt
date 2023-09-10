@@ -16,4 +16,8 @@ class RecipesRepositoryImpl(
     override fun getRecipesList(): Flow<List<Recipe>> {
         return dao.getRecipesList()
     }
+
+    override suspend fun deleteRecipeById(recipeId: Int) {
+        dao.deleteRecipeById(recipeId)
+    }
 }

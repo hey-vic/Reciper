@@ -5,5 +5,7 @@ sealed class AddEditRecipeEvent {
     data class OnDetailsChange(val details: String) : AddEditRecipeEvent()
     data class OnIngredientsChange(val ingredients: String) : AddEditRecipeEvent()
     data class OnCookingTimeChange(val cookingTime: String) : AddEditRecipeEvent()
+    object OnDeleteRecipeClick : AddEditRecipeEvent()
+    object OnUndoDeleteClick : AddEditRecipeEvent()
     object OnSaveRecipeClick : AddEditRecipeEvent()
 }
