@@ -2,7 +2,6 @@ package com.myprojects.reciper.ui.recipes_list
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,8 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,8 +39,8 @@ fun RecipeItem(
 ) {
     Box(
         modifier = modifier
-            .height(170.dp)
             .padding(7.dp)
+            .height(180.dp)
             .clip(RoundedCornerShape(16.dp))
     ) {
         Image(
@@ -58,6 +60,23 @@ fun RecipeItem(
                     )
                 )
         )
+        IconButton(
+            onClick = {
+                onEvent(RecipesListEvent.OnFavouritesChange(recipe, !recipe.isFavourites))
+            },
+            modifier = Modifier
+                .padding(14.dp)
+                .size(22.dp, 19.dp)
+                .align(Alignment.TopEnd)
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(
+                    id = if (recipe.isFavourites) R.drawable.ic_heart_filled else R.drawable.ic_heart_unfilled
+                ),
+                contentDescription = "Add to Favourites",
+                tint = Color.White
+            )
+        }
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -80,16 +99,5 @@ fun RecipeItem(
                 color = Color.White
             )
         }
-        Icon(painter = painterResource(
-            id = if (recipe.isFavourites) R.drawable.ic_heart_filled else R.drawable.ic_heart_unfilled
-        ),
-            contentDescription = "Add to Favourites",
-            modifier = Modifier
-                .size(22.dp, 19.dp)
-                .align(Alignment.TopEnd)
-                .padding(14.dp)
-                .clickable {
-                    onEvent(RecipesListEvent.OnFavouritesChange(recipe, !recipe.isFavourites))
-                })
     }
 }
