@@ -1,4 +1,4 @@
-package com.myprojects.reciper.data
+package com.myprojects.reciper.data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -7,8 +7,7 @@ import androidx.room.PrimaryKey
 data class Recipe(
     val title: String,
     val details: String,
-    val ingredients: String,
     val cookingTime: String?,
     val isFavourites: Boolean,
-    @PrimaryKey val id: Int? = null
+    @PrimaryKey(autoGenerate = true) val recipeId: Long = 0
 )

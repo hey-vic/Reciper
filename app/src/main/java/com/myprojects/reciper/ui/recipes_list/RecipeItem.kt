@@ -25,12 +25,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myprojects.reciper.R
-import com.myprojects.reciper.data.Recipe
+import com.myprojects.reciper.data.entities.Recipe
 import com.myprojects.reciper.ui.theme.montserratFamily
 
 @Composable
 fun RecipeItem(
     recipe: Recipe,
+    ingredientNames: List<String>,
     onEvent: (RecipesListEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -71,7 +72,7 @@ fun RecipeItem(
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = recipe.ingredients,
+                text = ingredientNames.joinToString(" • "),
                 fontFamily = montserratFamily,
                 fontWeight = FontWeight.Medium,
                 lineHeight = 12.sp,

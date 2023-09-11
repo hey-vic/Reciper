@@ -16,7 +16,7 @@ class RecipesListViewModel @Inject constructor(
     private val repository: RecipeRepository
 ) : ViewModel() {
 
-    val recipes = repository.getRecipesList()
+    val recipesWithIngredients = repository.getRecipesWithIngredientsList()
 
     private val _uiEvent = Channel<UIEvent> { }
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -25,7 +25,7 @@ class RecipesListViewModel @Inject constructor(
         when (event) {
             is RecipesListEvent.OnRecipeClick -> {
                 sendUiEvent(
-                    UIEvent.Navigate(Routes.ADD_EDIT_RECIPE + "?recipeId=${event.recipe.id}")
+                    UIEvent.Navigate(Routes.ADD_EDIT_RECIPE + "?recipeId=${event.recipe.recipeId}")
                 )
             }
 

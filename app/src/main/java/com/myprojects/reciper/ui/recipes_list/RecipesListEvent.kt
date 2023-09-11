@@ -1,6 +1,6 @@
 package com.myprojects.reciper.ui.recipes_list
 
-import com.myprojects.reciper.data.Recipe
+import com.myprojects.reciper.data.entities.Recipe
 
 sealed class RecipesListEvent {
     data class OnFavouritesChange(

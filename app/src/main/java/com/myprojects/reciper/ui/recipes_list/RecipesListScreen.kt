@@ -34,7 +34,9 @@ import com.myprojects.reciper.util.UIEvent
 fun RecipesListScreen(
     onNavigate: (UIEvent.Navigate) -> Unit, viewModel: RecipesListViewModel = hiltViewModel()
 ) {
-    val recipes = viewModel.recipes.collectAsState(initial = emptyList())
+    val recipesWithIngredients =
+        viewModel.recipesWithIngredients.collectAsState(initial = emptyList())
+
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
@@ -68,17 +70,21 @@ fun RecipesListScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                items(recipes.value) { recipe ->
+                items(recipesWithIngredients.value) { recipeWithIngredients ->
                     RecipeItem(
-                        recipe = recipe,
+                        recipe = recipeWithIngredients.recipe,
+                        ingredientNames = recipeWithIngredients.ingredients.map { it.name },
                         onEvent = viewModel::onEvent,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                viewModel.onEvent(RecipesListEvent.OnRecipeClick(recipe))
+                                viewModel.onEvent(
+                                    RecipesListEvent.OnRecipeClick(
+                                        recipeWithIngredients.recipe
+                                    )
+                                )
                             }
                     )
-
                 }
             }
         }
