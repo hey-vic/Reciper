@@ -8,6 +8,5 @@ sealed class AddEditRecipeEvent {
     data class OnRemoveIngredientFromList(val ingredientIndex: Int) : AddEditRecipeEvent()
     data class OnCookingTimeChange(val cookingTime: String) : AddEditRecipeEvent()
     object OnDeleteRecipeClick : AddEditRecipeEvent()
-    object OnUndoDeleteClick : AddEditRecipeEvent()
     object OnSaveRecipeClick : AddEditRecipeEvent()
 }

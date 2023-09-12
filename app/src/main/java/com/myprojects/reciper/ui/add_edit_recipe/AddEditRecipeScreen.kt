@@ -27,10 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -51,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.myprojects.reciper.R
+import com.myprojects.reciper.data.entities.Ingredient
+import com.myprojects.reciper.data.entities.Recipe
 import com.myprojects.reciper.ui.CustomToolbar
 import com.myprojects.reciper.ui.theme.BackgroundGray
 import com.myprojects.reciper.ui.theme.DarkRed
@@ -63,9 +61,11 @@ import com.myprojects.reciper.util.UIEvent
 @Composable
 fun AddEditRecipeScreen(
     onPopBackStack: () -> Unit,
-    viewModel: AddEditRecipeViewModel = hiltViewModel()
+    viewModel: AddEditRecipeViewModel = hiltViewModel(),
+    showSnackbar: (String, String?, () -> Unit) -> Unit,
+    onRecipeDelete: (deletedRecipe: Recipe?, deletedIngredients: List<Ingredient>?) -> Unit,
+    onUndoDelete: () -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
     val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(key1 = true) {
@@ -73,25 +73,22 @@ fun AddEditRecipeScreen(
             when (event) {
                 is UIEvent.PopBackStack -> onPopBackStack()
                 is UIEvent.ShowSnackbar -> {
-                    val result = snackbarHostState.showSnackbar(
-                        message = event.message,
-                        actionLabel = event.action,
-                        duration = SnackbarDuration.Short
-                    )
-                    if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.onEvent(AddEditRecipeEvent.OnUndoDeleteClick)
+                    showSnackbar(
+                        event.message,
+                        event.action,
+                    ) {
+                        onUndoDelete()
                     }
                 }
-
+                is UIEvent.DeleteRecipe -> {
+                    onRecipeDelete(event.recipe, event.ingredients)
+                }
                 else -> Unit
             }
         }
     }
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
         floatingActionButton = {
             FloatingActionButton(
                 containerColor = DarkRed,
