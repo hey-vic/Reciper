@@ -73,7 +73,7 @@ fun RecipesListScreen(
                 items(recipesWithIngredients.value) { recipeWithIngredients ->
                     RecipeItem(
                         recipe = recipeWithIngredients.recipe,
-                        ingredientNames = recipeWithIngredients.ingredients.map { it.name },
+                        ingredientNames = recipeWithIngredients.ingredients.map { it.ingredientName },
                         onEvent = viewModel::onEvent,
                         modifier = Modifier
                             .fillMaxWidth()

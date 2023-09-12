@@ -14,8 +14,8 @@ class RecipeRepositoryImpl(
         return dao.upsertRecipe(recipe)
     }
 
-    override suspend fun upsertIngredient(ingredient: Ingredient): Long {
-        return dao.upsertIngredient(ingredient)
+    override suspend fun upsertIngredient(ingredient: Ingredient) {
+        dao.upsertIngredient(ingredient)
     }
 
     override suspend fun upsertRecipeIngredientCrossRef(crossRef: RecipeIngredientCrossRef) {
@@ -46,8 +46,26 @@ class RecipeRepositoryImpl(
         return dao.getRecipesWithIngredientsList()
     }
 
-    override suspend fun getRecipesOfIngredientByIngredientId(ingredientId: Long): List<IngredientWithRecipes> {
-        return dao.getRecipesOfIngredientByIngredientId(ingredientId)
+    override suspend fun getRecipesOfIngredientByIngredientName(ingredientName: String): List<IngredientWithRecipes> {
+        return dao.getRecipesOfIngredientByIngredientName(ingredientName)
     }
 
+    override suspend fun upsertRecipeWithIngredients(
+        recipe: Recipe,
+        previouslySavedIngredients: List<Ingredient>,
+        currentIngredients: List<Ingredient>
+    ) {
+        return dao.upsertRecipeWithIngredients(
+            recipe,
+            previouslySavedIngredients,
+            currentIngredients
+        )
+    }
+
+    override suspend fun deleteRecipeWithIngredients(
+        recipe: Recipe,
+        ingredients: List<Ingredient>
+    ) {
+        return dao.deleteRecipeWithIngredients(recipe, ingredients)
+    }
 }

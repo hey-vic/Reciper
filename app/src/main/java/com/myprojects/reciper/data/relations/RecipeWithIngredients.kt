@@ -10,7 +10,7 @@ data class RecipeWithIngredients(
     @Embedded val recipe: Recipe,
     @Relation(
         parentColumn = "recipeId",
-        entityColumn = "ingredientId",
+        entityColumn = "ingredientName",
         associateBy = Junction(RecipeIngredientCrossRef::class)
     )
     val ingredients: List<Ingredient>

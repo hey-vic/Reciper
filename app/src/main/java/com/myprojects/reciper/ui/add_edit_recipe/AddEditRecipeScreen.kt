@@ -169,7 +169,7 @@ fun AddEditRecipeScreen(
                     )
                 }
                 item {
-                    if (viewModel.ingredientList.isEmpty()) {
+                    if (viewModel.currentIngredients.isEmpty()) {
                         Text(
                             text = "No ingredients yet",
                             style = TextStyle(
@@ -183,13 +183,13 @@ fun AddEditRecipeScreen(
                         FlowRow(
                             Modifier.fillMaxWidth()
                         ) {
-                            viewModel.ingredientList.forEachIndexed { index, ingredient ->
+                            viewModel.currentIngredients.forEachIndexed { index, ingredient ->
                                 InputChip(
                                     modifier = Modifier
                                         .padding(horizontal = 8.dp)
                                         .align(alignment = Alignment.CenterVertically),
                                     onClick = { },
-                                    label = { Text(ingredient.name) },
+                                    label = { Text(ingredient.ingredientName) },
                                     selected = true,
                                     trailingIcon = {
                                         Icon(

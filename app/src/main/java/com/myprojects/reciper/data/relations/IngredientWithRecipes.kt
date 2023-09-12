@@ -9,7 +9,7 @@ import com.myprojects.reciper.data.entities.Recipe
 data class IngredientWithRecipes(
     @Embedded val ingredient: Ingredient,
     @Relation(
-        parentColumn = "ingredientId",
+        parentColumn = "ingredientName",
         entityColumn = "recipeId",
         associateBy = Junction(RecipeIngredientCrossRef::class)
     )

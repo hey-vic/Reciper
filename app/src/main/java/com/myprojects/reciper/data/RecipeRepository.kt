@@ -11,7 +11,7 @@ interface RecipeRepository {
 
     suspend fun upsertRecipe(recipe: Recipe): Long
 
-    suspend fun upsertIngredient(ingredient: Ingredient): Long
+    suspend fun upsertIngredient(ingredient: Ingredient)
 
     suspend fun upsertRecipeIngredientCrossRef(crossRef: RecipeIngredientCrossRef)
 
@@ -27,5 +27,16 @@ interface RecipeRepository {
 
     fun getRecipesWithIngredientsList(): Flow<List<RecipeWithIngredients>>
 
-    suspend fun getRecipesOfIngredientByIngredientId(ingredientId: Long): List<IngredientWithRecipes>
+    suspend fun getRecipesOfIngredientByIngredientName(ingredientName: String): List<IngredientWithRecipes>
+
+    suspend fun upsertRecipeWithIngredients(
+        recipe: Recipe,
+        previouslySavedIngredients: List<Ingredient>,
+        currentIngredients: List<Ingredient>
+    )
+
+    suspend fun deleteRecipeWithIngredients(
+        recipe: Recipe,
+        ingredients: List<Ingredient>
+    )
 }

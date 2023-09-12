@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.myprojects.reciper.data.RecipeRepository
 import com.myprojects.reciper.data.entities.Ingredient
 import com.myprojects.reciper.data.entities.Recipe
-import com.myprojects.reciper.data.relations.RecipeIngredientCrossRef
 import com.myprojects.reciper.util.UIEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -33,8 +32,8 @@ class AddEditRecipeViewModel @Inject constructor(
     var details by mutableStateOf("")
         private set
 
-    private var savedIngredients: List<Ingredient> = emptyList()
-    var ingredientList = mutableStateListOf<Ingredient>()
+    private var previouslySavedIngredients: List<Ingredient> = emptyList()
+    var currentIngredients = mutableStateListOf<Ingredient>()
         private set
 
     var newIngredientName by mutableStateOf("")
@@ -47,6 +46,7 @@ class AddEditRecipeViewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private var deletedRecipe: Recipe? = null
+    private var deletedIngredients: List<Ingredient>? = null
 
     init {
         val recipeId = savedStateHandle.get<Long>("recipeId")!!
@@ -58,11 +58,11 @@ class AddEditRecipeViewModel @Inject constructor(
                     cookingTime = recipe.cookingTime ?: ""
                     this@AddEditRecipeViewModel.recipe = recipe
                 }
-                savedIngredients = repository
+                previouslySavedIngredients = repository
                     .getIngredientsOfRecipeByRecipeId(recipeId)
                     .first()
                     .ingredients
-                savedIngredients.forEach { ingredientList.add(it) }
+                previouslySavedIngredients.forEach { currentIngredients.add(it) }
             }
         }
     }
@@ -86,19 +86,20 @@ class AddEditRecipeViewModel @Inject constructor(
             }
 
             is AddEditRecipeEvent.OnAddIngredientToList -> {
-                ingredientList.add(Ingredient(newIngredientName))
+                currentIngredients.add(Ingredient(newIngredientName))
                 newIngredientName = ""
             }
 
             is AddEditRecipeEvent.OnRemoveIngredientFromList -> {
-                ingredientList.removeAt(event.ingredientIndex)
+                currentIngredients.removeAt(event.ingredientIndex)
             }
 
             is AddEditRecipeEvent.OnDeleteRecipeClick -> {
                 recipe?.let { recipe ->
                     viewModelScope.launch {
-                        repository.deleteRecipeById(recipe.recipeId)
+                        repository.deleteRecipeWithIngredients(recipe, previouslySavedIngredients)
                         deletedRecipe = recipe
+                        deletedIngredients = previouslySavedIngredients
                         sendUiEvent(
                             UIEvent.ShowSnackbar(
                                 message = "Recipe deleted",
@@ -112,49 +113,45 @@ class AddEditRecipeViewModel @Inject constructor(
 
             is AddEditRecipeEvent.OnUndoDeleteClick -> {
                 deletedRecipe?.let { recipe ->
-                    viewModelScope.launch {
-                        repository.upsertRecipe(recipe)
+                    deletedIngredients?.let { ingredients ->
+                        viewModelScope.launch {
+                            repository.upsertRecipeWithIngredients(
+                                recipe,
+                                emptyList(),
+                                ingredients
+                            )
+                        }
                     }
                 }
             }
 
             AddEditRecipeEvent.OnSaveRecipeClick -> {
                 viewModelScope.launch {
-                    if (title.isEmpty() || details.isEmpty() || ingredientList.isEmpty()) {
+                    if (title.isEmpty() || details.isEmpty() || currentIngredients.isEmpty()) {
                         sendUiEvent(
                             UIEvent.ShowSnackbar(
                                 when {
                                     title.isBlank() -> "The title can't be empty"
                                     details.isBlank() -> "Recipe details can't be empty"
-                                    ingredientList.isEmpty() -> "Recipe ingredients can't be empty"
+                                    currentIngredients.isEmpty() -> "Recipe ingredients can't be empty"
                                     else -> ""
                                 }
                             )
                         )
                         return@launch
                     }
-                    val newRecipeId = repository.upsertRecipe(
-                        Recipe(
-                            title = title,
-                            details = details,
-                            cookingTime = cookingTime,
-                            isFavourites = recipe?.isFavourites ?: false,
-                            recipeId = recipe?.recipeId ?: 0
-                        )
+                    val newRecipe = Recipe(
+                        title = title,
+                        details = details,
+                        cookingTime = cookingTime,
+                        isFavourites = recipe?.isFavourites ?: false,
+                        recipeId = recipe?.recipeId ?: 0
                     )
-                    savedIngredients.forEach { ingredient ->
-                        if (ingredient !in ingredientList) {
-                            repository.deleteRecipeIngredientCrossRef(
-                                RecipeIngredientCrossRef(newRecipeId, ingredient.ingredientId)
-                            )
-                        }
-                    }
-                    ingredientList.forEach { ingredient ->
-                        val newIngredientId = repository.upsertIngredient(ingredient)
-                        repository.upsertRecipeIngredientCrossRef(
-                            RecipeIngredientCrossRef(newRecipeId, newIngredientId)
-                        )
-                    }
+                    repository.upsertRecipeWithIngredients(
+                        newRecipe,
+                        previouslySavedIngredients,
+                        currentIngredients
+                    )
                     sendUiEvent(UIEvent.PopBackStack)
                 }
             }

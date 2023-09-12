@@ -2,8 +2,8 @@ package com.myprojects.reciper.data.relations
 
 import androidx.room.Entity
 
-@Entity(primaryKeys = ["recipeId", "ingredientId"])
+@Entity(primaryKeys = ["recipeId", "ingredientName"])
 data class RecipeIngredientCrossRef(
     val recipeId: Long,
-    val ingredientId: Long
+    val ingredientName: String
 )
