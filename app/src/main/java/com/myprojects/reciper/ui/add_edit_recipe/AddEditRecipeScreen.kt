@@ -42,17 +42,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.myprojects.reciper.R
 import com.myprojects.reciper.data.entities.Ingredient
 import com.myprojects.reciper.data.entities.Recipe
+import com.myprojects.reciper.ui.CustomTextField
 import com.myprojects.reciper.ui.CustomToolbar
 import com.myprojects.reciper.ui.theme.BackgroundGray
 import com.myprojects.reciper.ui.theme.DarkRed
-import com.myprojects.reciper.ui.theme.Mint
 import com.myprojects.reciper.ui.theme.montserratFamily
 import com.myprojects.reciper.util.UIEvent
 
@@ -265,38 +264,4 @@ fun AddEditRecipeScreen(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomTextField(
-    placeholder: String,
-    value: String,
-    modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit,
-    maxLines: Int = 1
-) {
-    TextField(
-        value = value,
-        onValueChange = {
-            onValueChange(it)
-        },
-        placeholder = {
-            Text(placeholder, color = Mint)
-        },
-        modifier = modifier,
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ),
-        shape = RoundedCornerShape(16.dp),
-        textStyle = TextStyle(
-            fontFamily = montserratFamily,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Start
-        ),
-        maxLines = maxLines,
-        singleLine = (maxLines == 1)
-    )
 }

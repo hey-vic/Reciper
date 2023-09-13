@@ -7,6 +7,10 @@ import com.myprojects.reciper.util.Routes
 import com.myprojects.reciper.util.UIEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,10 +20,26 @@ class RecipesListViewModel @Inject constructor(
     private val repository: RecipeRepository
 ) : ViewModel() {
 
-    val recipesWithIngredients = repository.getRecipesWithIngredientsList()
-
     private val _uiEvent = Channel<UIEvent> { }
     val uiEvent = _uiEvent.receiveAsFlow()
+
+    private val _searchText = MutableStateFlow("")
+    val searchText = _searchText.asStateFlow()
+
+    private val _shouldSearchInTitle = MutableStateFlow(true)
+    val shouldSearchInTitle = _shouldSearchInTitle.asStateFlow()
+
+    private val _shouldSearchInDetails = MutableStateFlow(true)
+    val shouldSearchInDetails = _shouldSearchInDetails.asStateFlow()
+
+    val recipesWithIngredients =
+        merge(_searchText, _shouldSearchInTitle, _shouldSearchInDetails)
+            .flatMapLatest {
+                repository.getAllRecipesWithIngredientsByOptionalTitleOrDetails(
+                    if (_shouldSearchInTitle.value) searchText.value else "",
+                    if (_shouldSearchInDetails.value) searchText.value else ""
+                )
+            }
 
     fun onEvent(event: RecipesListEvent) {
         when (event) {
@@ -40,8 +60,21 @@ class RecipesListViewModel @Inject constructor(
                     )
                 }
             }
+
+            is RecipesListEvent.OnSearchTextChange -> {
+                _searchText.value = event.newText.lowercase()
+            }
+
+            is RecipesListEvent.OnShouldSearchInDetailsChange -> {
+                _shouldSearchInDetails.value = event.newVal
+            }
+
+            is RecipesListEvent.OnShouldSearchInTitleChange -> {
+                _shouldSearchInTitle.value = event.newVal
+            }
         }
     }
+
 
     private fun sendUiEvent(event: UIEvent) {
         viewModelScope.launch {

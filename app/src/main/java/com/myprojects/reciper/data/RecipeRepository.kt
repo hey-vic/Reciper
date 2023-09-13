@@ -19,13 +19,17 @@ interface RecipeRepository {
 
     suspend fun getRecipeById(id: Long): Recipe?
 
-    fun getRecipesList(): Flow<List<Recipe>>
+    fun getAllRecipes(): Flow<List<Recipe>>
 
     suspend fun deleteRecipeById(recipeId: Long)
 
     suspend fun getIngredientsOfRecipeByRecipeId(recipeId: Long): List<RecipeWithIngredients>
 
-    fun getRecipesWithIngredientsList(): Flow<List<RecipeWithIngredients>>
+    fun getAllRecipesWithIngredients(): Flow<List<RecipeWithIngredients>>
+
+    fun getAllRecipesWithIngredientsByOptionalTitleOrDetails(
+        titleQuery: String, detailsQuery: String
+    ): Flow<List<RecipeWithIngredients>>
 
     suspend fun getRecipesOfIngredientByIngredientName(ingredientName: String): List<IngredientWithRecipes>
 

@@ -44,7 +44,7 @@ interface RecipeDao {
     suspend fun getRecipeById(recipeId: Long): Recipe?
 
     @Query("SELECT * FROM recipe")
-    fun getRecipesList(): Flow<List<Recipe>>
+    fun getAllRecipes(): Flow<List<Recipe>>
 
     @Query("DELETE FROM recipe WHERE recipeId = :recipeId")
     suspend fun deleteRecipeById(recipeId: Long)
@@ -55,7 +55,42 @@ interface RecipeDao {
 
     @Transaction
     @Query("SELECT * FROM recipe")
-    fun getRecipesWithIngredientsList(): Flow<List<RecipeWithIngredients>>
+    fun getAllRecipesWithIngredients(): Flow<List<RecipeWithIngredients>>
+
+    @Transaction
+    @Query("SELECT * FROM recipe WHERE title LIKE '%' || :titleQuery || '%'")
+    fun getAllRecipesWithIngredientsByTitle(titleQuery: String): Flow<List<RecipeWithIngredients>>
+
+    @Transaction
+    @Query("SELECT * FROM recipe WHERE details LIKE '%' || :detailsQuery || '%'")
+    fun getAllRecipesWithIngredientsByDetails(detailsQuery: String): Flow<List<RecipeWithIngredients>>
+
+    @Transaction
+    @Query(
+        "SELECT * FROM recipe " +
+                "WHERE title LIKE '%' || :titleQuery || '%'" +
+                "OR details LIKE '%' || :detailsQuery || '%'"
+    )
+    fun getAllRecipesWithIngredientsByTitleAndDetails(
+        titleQuery: String, detailsQuery: String
+    ): Flow<List<RecipeWithIngredients>>
+
+    fun getAllRecipesWithIngredientsByOptionalTitleOrDetails(
+        titleQuery: String, detailsQuery: String
+    ): Flow<List<RecipeWithIngredients>> {
+        return when {
+
+            titleQuery.isNotBlank() && detailsQuery.isBlank() -> getAllRecipesWithIngredientsByTitle(
+                titleQuery
+            )
+
+            titleQuery.isBlank() && detailsQuery.isNotBlank() -> getAllRecipesWithIngredientsByDetails(
+                detailsQuery
+            )
+
+            else -> getAllRecipesWithIngredientsByTitleAndDetails(titleQuery, detailsQuery)
+        }
+    }
 
     @Transaction
     @Query("SELECT * FROM ingredient WHERE ingredientName = :ingredientName")

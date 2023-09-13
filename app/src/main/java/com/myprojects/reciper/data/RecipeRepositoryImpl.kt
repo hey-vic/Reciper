@@ -30,8 +30,8 @@ class RecipeRepositoryImpl(
         return dao.getRecipeById(id)
     }
 
-    override fun getRecipesList(): Flow<List<Recipe>> {
-        return dao.getRecipesList()
+    override fun getAllRecipes(): Flow<List<Recipe>> {
+        return dao.getAllRecipes()
     }
 
     override suspend fun deleteRecipeById(recipeId: Long) {
@@ -42,8 +42,14 @@ class RecipeRepositoryImpl(
         return dao.getIngredientsOfRecipeByRecipeId(recipeId)
     }
 
-    override fun getRecipesWithIngredientsList(): Flow<List<RecipeWithIngredients>> {
-        return dao.getRecipesWithIngredientsList()
+    override fun getAllRecipesWithIngredients(): Flow<List<RecipeWithIngredients>> {
+        return dao.getAllRecipesWithIngredients()
+    }
+
+    override fun getAllRecipesWithIngredientsByOptionalTitleOrDetails(
+        titleQuery: String, detailsQuery: String
+    ): Flow<List<RecipeWithIngredients>> {
+        return dao.getAllRecipesWithIngredientsByOptionalTitleOrDetails(titleQuery, detailsQuery)
     }
 
     override suspend fun getRecipesOfIngredientByIngredientName(ingredientName: String): List<IngredientWithRecipes> {
