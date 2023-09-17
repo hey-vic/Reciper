@@ -14,4 +14,5 @@ sealed interface RecipesListEvent {
     data class OnShouldSearchInTitleChange(val newVal: Boolean) : RecipesListEvent
     data class OnShouldSearchInDetailsChange(val newVal: Boolean) : RecipesListEvent
     data class OnShouldSearchInFavouritesChange(val newVal: Boolean) : RecipesListEvent
+    object OnToggleSearchSectionVisibility : RecipesListEvent
 }

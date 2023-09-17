@@ -9,12 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.myprojects.reciper.R
 import com.myprojects.reciper.ui.shared.components.CustomTextField
-import com.myprojects.reciper.ui.theme.LightGray
 import com.myprojects.reciper.ui.theme.montserratFamily
 
 @Composable
@@ -40,7 +40,7 @@ fun SearchSection(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                .padding(top = 8.dp, start = 16.dp, end = 16.dp),
             leadingIconRes = R.drawable.ic_search,
             leadingIconDescr = "Search",
             trailingIconRes = if (searchText.isNotBlank()) {
@@ -55,29 +55,35 @@ fun SearchSection(
         Text(
             text = "Search in... ",
             style = TextStyle(fontFamily = montserratFamily, fontWeight = FontWeight.SemiBold),
-            color = LightGray,
-            modifier = Modifier.padding(top = 16.dp, start = 32.dp, end = 16.dp, bottom = 8.dp)
+            color = Color.White.copy(alpha = 0.6f),
+            modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 16.dp, bottom = 8.dp)
         )
 
         Row(
-            Modifier.padding(start = 24.dp, bottom = 16.dp),
+            Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CheckboxItem(
                 text = "titles",
                 isChecked = shouldSearchInTitle,
-                onCheckedChange = onShouldSearchInTitleChange
+                onCheckedChange = onShouldSearchInTitleChange,
+                modifier = Modifier.weight(1f)
             )
             CheckboxItem(
                 text = "details",
                 isChecked = shouldSearchInDetails,
-                onCheckedChange = onShouldSearchInDetailsChange
+                onCheckedChange = onShouldSearchInDetailsChange,
+                modifier = Modifier.weight(1f)
             )
             CheckboxItem(
                 text = "favourites",
                 isChecked = shouldSearchInFavourites,
-                onCheckedChange = onShouldSearchInFavouritesChange
+                onCheckedChange = onShouldSearchInFavouritesChange,
+                modifier = Modifier.weight(1f)
             )
         }
     }

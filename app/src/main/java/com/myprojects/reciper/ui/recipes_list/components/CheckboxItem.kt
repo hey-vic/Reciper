@@ -2,6 +2,7 @@ package com.myprojects.reciper.ui.recipes_list.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,7 +38,8 @@ fun CheckboxItem(
             .clip(RoundedCornerShape(10.dp))
             .background(Color.White)
             .clickable { onCheckedChange(!isChecked) }
-            .padding(start = 10.dp)
+            .padding(start = 10.dp),
+        horizontalArrangement = Arrangement.Center
     ) {
         Text(
             text = text,

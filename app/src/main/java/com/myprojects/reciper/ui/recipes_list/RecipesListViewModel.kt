@@ -39,11 +39,14 @@ class RecipesListViewModel @Inject constructor(
         merge(_searchText, _shouldSearchInTitle, _shouldSearchInDetails, _shouldSearchInFavourites)
             .flatMapLatest {
                 repository.getAllRecipesWithIngredientsByOptions(
-                    if (_shouldSearchInTitle.value) searchText.value else "",
-                    if (_shouldSearchInDetails.value) searchText.value else "",
+                    if (_shouldSearchInTitle.value) searchText.value.lowercase() else "",
+                    if (_shouldSearchInDetails.value) searchText.value.lowercase() else "",
                     _shouldSearchInFavourites.value
                 )
             }
+
+    private val _isSearchSectionVisible = MutableStateFlow(false)
+    val isSearchSectionVisible = _isSearchSectionVisible.asStateFlow()
 
     fun onEvent(event: RecipesListEvent) {
         when (event) {
@@ -66,7 +69,7 @@ class RecipesListViewModel @Inject constructor(
             }
 
             is RecipesListEvent.OnSearchTextChange -> {
-                _searchText.value = event.newText.lowercase()
+                _searchText.value = event.newText
             }
 
             is RecipesListEvent.OnShouldSearchInDetailsChange -> {
@@ -79,6 +82,10 @@ class RecipesListViewModel @Inject constructor(
 
             is RecipesListEvent.OnShouldSearchInFavouritesChange -> {
                 _shouldSearchInFavourites.value = event.newVal
+            }
+
+            RecipesListEvent.OnToggleSearchSectionVisibility -> {
+                _isSearchSectionVisible.value = !_isSearchSectionVisible.value
             }
         }
     }
