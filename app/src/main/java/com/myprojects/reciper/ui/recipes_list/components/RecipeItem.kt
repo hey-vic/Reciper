@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -58,16 +58,14 @@ fun RecipeItem(
 
     Box(
         modifier = modifier
-            .padding(7.dp)
+            .padding(4.dp)
             .height(180.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(10.dp))
     ) {
         AsyncImage(
             model = imageUri ?: R.drawable.image_placeholder,
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .height(300.dp),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
         Box(
@@ -76,7 +74,7 @@ fun RecipeItem(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color(0x0D000000), Color(0x80000000),
+                            Color(0x08000000), Color(0x99000000),
                         )
                     )
                 )
@@ -86,10 +84,10 @@ fun RecipeItem(
                 onEvent(RecipesListEvent.OnFavouritesChange(recipe, !recipe.isFavourites))
             },
             modifier = Modifier
-                .padding(14.dp)
+                .padding(10.dp)
                 .align(Alignment.TopEnd)
-                .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.7f))
+                .clip(RoundedCornerShape(6.dp))
+                .background(Color.White.copy(alpha = 0.8f))
                 .size(32.dp)
                 .padding(6.dp)
                 .padding(top = 1.dp)
@@ -112,7 +110,10 @@ fun RecipeItem(
                 fontFamily = montserratFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
-                color = Color.White
+                color = Color.White,
+                lineHeight = 16.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
@@ -121,7 +122,9 @@ fun RecipeItem(
                 fontWeight = FontWeight.Medium,
                 lineHeight = 12.sp,
                 fontSize = 10.sp,
-                color = Color.White
+                color = Color.White,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
