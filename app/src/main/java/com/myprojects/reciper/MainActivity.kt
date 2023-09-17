@@ -1,7 +1,12 @@
 package com.myprojects.reciper
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,6 +15,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,6 +30,10 @@ import com.myprojects.reciper.ui.theme.ReciperTheme
 import com.myprojects.reciper.util.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.IOException
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -53,9 +63,12 @@ class MainActivity : ComponentActivity() {
                         startDestination = Routes.RECIPES_LIST
                     ) {
                         composable(Routes.RECIPES_LIST) {
-                            RecipesListScreen(onNavigate = {
-                                navController.navigate(it.route)
-                            })
+                            RecipesListScreen(
+                                onNavigate = {
+                                    navController.navigate(it.route)
+                                },
+                                onImageLoad = { uri -> loadPhotoFromInternalStorage(uri) }
+                            )
                         }
                         composable(
                             route = Routes.ADD_EDIT_RECIPE + "?recipeId={recipeId}",
@@ -71,17 +84,58 @@ class MainActivity : ComponentActivity() {
                                     navController.popBackStack()
                                 },
                                 showSnackbar = { message, actionLabel, onActionPerformed ->
-                                    sharedScreen.showSnackbar(message, actionLabel, onActionPerformed)
+                                    sharedScreen.showSnackbar(
+                                        message,
+                                        actionLabel,
+                                        onActionPerformed
+                                    )
                                 },
-                                onRecipeDelete = { recipe, ingredients ->
-                                    sharedViewModel.cacheDeletedRecipe(recipe, ingredients)
+                                onRecipeDelete = { recipe, ingredients, imageUri ->
+                                    sharedViewModel.cacheDeletedRecipe(
+                                        recipe,
+                                        ingredients
+                                    )
                                 },
-                                onUndoDelete = { sharedViewModel.restoreDeletedRecipe() }
+                                onUndoDelete = { sharedViewModel.restoreDeletedRecipe() },
+                                onImageSave = { filename, uri ->
+                                    savePhotoToInternalStorage(filename, uri)
+                                },
+                                onImageLoad = { uri -> loadPhotoFromInternalStorage(uri) }
                             )
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun savePhotoToInternalStorage(filename: String, uri: Uri): Uri? {
+        try {
+            val bmp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, uri))
+            } else {
+                MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            }
+            openFileOutput("$filename.jpg", MODE_PRIVATE)
+                .use { stream ->
+                    if (!bmp.compress(Bitmap.CompressFormat.JPEG, 95, stream)) {
+                        throw IOException("Couldn't save bitmap.")
+                    }
+                }
+            return filesDir.toUri().buildUpon().appendPath("$filename.jpg").build()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+    }
+
+    private suspend fun loadPhotoFromInternalStorage(uri: Uri): Uri? {
+        return withContext(Dispatchers.IO) {
+            val files = filesDir.listFiles()
+            val newUri =
+                files?.firstOrNull { it.canRead() && it.isFile && it.toUri() == uri }
+                    ?.toUri()
+            newUri
         }
     }
 }

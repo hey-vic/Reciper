@@ -1,6 +1,7 @@
 package com.myprojects.reciper.ui.recipes_list
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -42,7 +43,9 @@ import com.myprojects.reciper.util.UIEvent
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun RecipesListScreen(
-    onNavigate: (UIEvent.Navigate) -> Unit, viewModel: RecipesListViewModel = hiltViewModel()
+    onNavigate: (UIEvent.Navigate) -> Unit,
+    onImageLoad: suspend (Uri) -> Uri?,
+    viewModel: RecipesListViewModel = hiltViewModel()
 ) {
     val recipesWithIngredients =
         viewModel.recipesWithIngredients.collectAsState(initial = emptyList())
@@ -134,6 +137,7 @@ fun RecipesListScreen(
                             recipe = recipeWithIngredients.recipe,
                             ingredientNames = recipeWithIngredients.ingredients.map { it.ingredientName },
                             onEvent = viewModel::onEvent,
+                            onImageLoad = onImageLoad,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {

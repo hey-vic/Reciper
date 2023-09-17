@@ -43,6 +43,9 @@ interface RecipeDao {
     @Query("SELECT * FROM recipe WHERE recipeId = :recipeId")
     suspend fun getRecipeById(recipeId: Long): Recipe?
 
+    @Query("SELECT * FROM recipe WHERE title = :title")
+    suspend fun getRecipeByTitle(title: String): Recipe?
+
     @Query("SELECT * FROM recipe")
     fun getAllRecipes(): Flow<List<Recipe>>
 

@@ -1,5 +1,6 @@
 package com.myprojects.reciper.ui.add_edit_recipe
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +43,16 @@ class AddEditRecipeViewModel @Inject constructor(
     var cookingTime by mutableStateOf<String?>(null)
         private set
 
+    // uri изображения, сохраненного локально или выбранного из галереи
+    var displayedImageUri by mutableStateOf<Uri?>(null)
+        private set
+
+    var locallySavedImageUri by mutableStateOf<Uri?>(null)
+        private set
+
+    var isTitleUnique by mutableStateOf(true)
+        private set
+
     private val _uiEvent = Channel<UIEvent> { }
     val uiEvent = _uiEvent.receiveAsFlow()
 
@@ -53,6 +64,7 @@ class AddEditRecipeViewModel @Inject constructor(
                     title = recipe.title
                     details = recipe.details
                     cookingTime = recipe.cookingTime ?: ""
+                    locallySavedImageUri = recipe.relatedImageUri?.let { Uri.parse(it) }
                     this@AddEditRecipeViewModel.recipe = recipe
                 }
                 previouslySavedIngredients = repository
@@ -80,6 +92,11 @@ class AddEditRecipeViewModel @Inject constructor(
 
             is AddEditRecipeEvent.OnTitleChange -> {
                 title = event.title
+                viewModelScope.launch {
+                    val recipeWithSameTitle = repository.getRecipeByTitle(title)
+                    isTitleUnique =
+                        recipeWithSameTitle == null || recipeWithSameTitle.recipeId == recipe?.recipeId
+                }
             }
 
             is AddEditRecipeEvent.OnAddIngredientToList -> {
@@ -94,11 +111,15 @@ class AddEditRecipeViewModel @Inject constructor(
             is AddEditRecipeEvent.OnDeleteRecipeClick -> {
                 recipe?.let { recipe ->
                     viewModelScope.launch {
-                        repository.deleteRecipeWithIngredients(recipe, previouslySavedIngredients)
+                        repository.deleteRecipeWithIngredients(
+                            recipe,
+                            previouslySavedIngredients
+                        )
                         sendUiEvent(
                             UIEvent.DeleteRecipe(
                                 recipe = recipe,
-                                ingredients = previouslySavedIngredients
+                                ingredients = previouslySavedIngredients,
+                                imageUri = locallySavedImageUri
                             )
                         )
                         sendUiEvent(
@@ -114,25 +135,31 @@ class AddEditRecipeViewModel @Inject constructor(
 
             AddEditRecipeEvent.OnSaveRecipeClick -> {
                 viewModelScope.launch {
-                    if (title.isEmpty() || details.isEmpty() || currentIngredients.isEmpty()) {
-                        sendUiEvent(
-                            UIEvent.ShowSnackbar(
-                                when {
-                                    title.isBlank() -> "The title can't be empty"
-                                    details.isBlank() -> "Recipe details can't be empty"
-                                    currentIngredients.isEmpty() -> "Recipe ingredients can't be empty"
-                                    else -> ""
-                                }
-                            )
-                        )
+                    if (title.isBlank()) {
+                        sendUiEvent(UIEvent.ShowSnackbar("The title can't be empty"))
                         return@launch
                     }
+                    if (details.isBlank()) {
+                        sendUiEvent(UIEvent.ShowSnackbar("Recipe details can't be empty"))
+                        return@launch
+                    }
+                    if (currentIngredients.isEmpty()) {
+                        sendUiEvent(UIEvent.ShowSnackbar("Recipe ingredients can't be empty"))
+                        return@launch
+                    }
+
+                    if (!isTitleUnique) {
+                        sendUiEvent(UIEvent.ShowSnackbar("Recipe with this title already exists"))
+                        return@launch
+                    }
+
                     val newRecipe = Recipe(
                         title = title,
                         details = details,
                         cookingTime = cookingTime,
                         isFavourites = recipe?.isFavourites ?: false,
-                        recipeId = recipe?.recipeId ?: 0
+                        recipeId = recipe?.recipeId ?: 0,
+                        relatedImageUri = locallySavedImageUri?.toString()
                     )
                     repository.upsertRecipeWithIngredients(
                         newRecipe,
@@ -142,6 +169,14 @@ class AddEditRecipeViewModel @Inject constructor(
                     sendUiEvent(UIEvent.PopBackStack)
                 }
             }
+
+            is AddEditRecipeEvent.OnLocallySavedImageUriChange -> {
+                locallySavedImageUri = event.newUri
+            }
+
+            is AddEditRecipeEvent.OnDisplayedImageUriChange -> {
+                displayedImageUri = event.newUri
+            }
         }
     }
 
@@ -150,4 +185,5 @@ class AddEditRecipeViewModel @Inject constructor(
             _uiEvent.send(event)
         }
     }
+
 }

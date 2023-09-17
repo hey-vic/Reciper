@@ -1,6 +1,10 @@
 package com.myprojects.reciper.ui.add_edit_recipe
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -38,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -45,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.myprojects.reciper.R
 import com.myprojects.reciper.data.entities.Ingredient
 import com.myprojects.reciper.data.entities.Recipe
@@ -62,10 +69,33 @@ fun AddEditRecipeScreen(
     onPopBackStack: () -> Unit,
     viewModel: AddEditRecipeViewModel = hiltViewModel(),
     showSnackbar: (String, String?, () -> Unit) -> Unit,
-    onRecipeDelete: (deletedRecipe: Recipe?, deletedIngredients: List<Ingredient>?) -> Unit,
-    onUndoDelete: () -> Unit
+    onRecipeDelete: (
+        deletedRecipe: Recipe?,
+        deletedIngredients: List<Ingredient>?,
+        deletedImageUri: Uri?
+    ) -> Unit,
+    onUndoDelete: () -> Unit,
+    onImageSave: (String, Uri) -> Uri?,
+    onImageLoad: suspend (Uri) -> Uri?
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            viewModel.onEvent(AddEditRecipeEvent.OnDisplayedImageUriChange(uri))
+        }
+    )
+
+    LaunchedEffect(key1 = viewModel.locallySavedImageUri) {
+        viewModel.locallySavedImageUri?.let { uri ->
+            viewModel.onEvent(
+                AddEditRecipeEvent.OnDisplayedImageUriChange(
+                    onImageLoad(uri)
+                )
+            )
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -79,9 +109,11 @@ fun AddEditRecipeScreen(
                         onUndoDelete()
                     }
                 }
+
                 is UIEvent.DeleteRecipe -> {
-                    onRecipeDelete(event.recipe, event.ingredients)
+                    onRecipeDelete(event.recipe, event.ingredients, event.imageUri)
                 }
+
                 else -> Unit
             }
         }
@@ -93,6 +125,16 @@ fun AddEditRecipeScreen(
                 containerColor = DarkRed,
                 contentColor = Color.White,
                 onClick = {
+                    if (viewModel.isTitleUnique) {
+                        viewModel.displayedImageUri?.let { uri ->
+                            val imageFilename = "${viewModel.title}_image"
+                            viewModel.onEvent(
+                                AddEditRecipeEvent.OnLocallySavedImageUriChange(
+                                    onImageSave(imageFilename, uri)
+                                )
+                            )
+                        }
+                    }
                     viewModel.onEvent(AddEditRecipeEvent.OnSaveRecipeClick)
                 }) {
                 Icon(
@@ -132,6 +174,29 @@ fun AddEditRecipeScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                item {
+                    AsyncImage(
+                        model = if (viewModel.displayedImageUri != null) {
+                            viewModel.displayedImageUri
+                        } else {
+                            R.drawable.image_placeholder
+                        },
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                item {
+                    Button(onClick = {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    }) {
+                        Text(text = "Pick one photo")
+                    }
+                }
                 item {
                     CustomTextField(
                         placeholder = "Title",

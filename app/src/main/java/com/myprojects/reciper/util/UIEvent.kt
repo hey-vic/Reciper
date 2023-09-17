@@ -1,5 +1,6 @@
 package com.myprojects.reciper.util
 
+import android.net.Uri
 import com.myprojects.reciper.data.entities.Ingredient
 import com.myprojects.reciper.data.entities.Recipe
 
@@ -10,5 +11,10 @@ sealed interface UIEvent {
         val message: String,
         val action: String? = null
     ) : UIEvent
-    data class DeleteRecipe(val recipe: Recipe, val ingredients: List<Ingredient>) : UIEvent
+
+    data class DeleteRecipe(
+        val recipe: Recipe,
+        val ingredients: List<Ingredient>,
+        val imageUri: Uri?
+    ) : UIEvent
 }
