@@ -29,8 +29,8 @@ interface RecipeRepository {
 
     fun getAllRecipesWithIngredients(): Flow<List<RecipeWithIngredients>>
 
-    fun getAllRecipesWithIngredientsByOptionalTitleOrDetails(
-        titleQuery: String, detailsQuery: String
+    fun getAllRecipesWithIngredientsByOptions(
+        titleQuery: String, detailsQuery: String, favouritesOnly: Boolean
     ): Flow<List<RecipeWithIngredients>>
 
     suspend fun getRecipesOfIngredientByIngredientName(ingredientName: String): List<IngredientWithRecipes>

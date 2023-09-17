@@ -55,9 +55,9 @@ import coil.compose.AsyncImage
 import com.myprojects.reciper.R
 import com.myprojects.reciper.data.entities.Ingredient
 import com.myprojects.reciper.data.entities.Recipe
-import com.myprojects.reciper.ui.CustomTextField
-import com.myprojects.reciper.ui.CustomToolbar
-import com.myprojects.reciper.ui.theme.BackgroundGray
+import com.myprojects.reciper.ui.shared.components.CustomTextField
+import com.myprojects.reciper.ui.shared.components.CustomToolbar
+import com.myprojects.reciper.ui.theme.BackgroundColor
 import com.myprojects.reciper.ui.theme.DarkRed
 import com.myprojects.reciper.ui.theme.montserratFamily
 import com.myprojects.reciper.util.UIEvent
@@ -147,7 +147,7 @@ fun AddEditRecipeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundGray)
+                .background(BackgroundColor)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 CustomToolbar()

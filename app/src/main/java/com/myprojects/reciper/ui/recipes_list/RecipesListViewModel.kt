@@ -32,12 +32,16 @@ class RecipesListViewModel @Inject constructor(
     private val _shouldSearchInDetails = MutableStateFlow(true)
     val shouldSearchInDetails = _shouldSearchInDetails.asStateFlow()
 
+    private val _shouldSearchInFavourites = MutableStateFlow(false)
+    val shouldSearchInFavourites = _shouldSearchInFavourites.asStateFlow()
+
     val recipesWithIngredients =
-        merge(_searchText, _shouldSearchInTitle, _shouldSearchInDetails)
+        merge(_searchText, _shouldSearchInTitle, _shouldSearchInDetails, _shouldSearchInFavourites)
             .flatMapLatest {
-                repository.getAllRecipesWithIngredientsByOptionalTitleOrDetails(
+                repository.getAllRecipesWithIngredientsByOptions(
                     if (_shouldSearchInTitle.value) searchText.value else "",
-                    if (_shouldSearchInDetails.value) searchText.value else ""
+                    if (_shouldSearchInDetails.value) searchText.value else "",
+                    _shouldSearchInFavourites.value
                 )
             }
 
@@ -71,6 +75,10 @@ class RecipesListViewModel @Inject constructor(
 
             is RecipesListEvent.OnShouldSearchInTitleChange -> {
                 _shouldSearchInTitle.value = event.newVal
+            }
+
+            is RecipesListEvent.OnShouldSearchInFavouritesChange -> {
+                _shouldSearchInFavourites.value = event.newVal
             }
         }
     }

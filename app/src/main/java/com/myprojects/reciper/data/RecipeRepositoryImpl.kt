@@ -50,10 +50,10 @@ class RecipeRepositoryImpl(
         return dao.getAllRecipesWithIngredients()
     }
 
-    override fun getAllRecipesWithIngredientsByOptionalTitleOrDetails(
-        titleQuery: String, detailsQuery: String
+    override fun getAllRecipesWithIngredientsByOptions(
+        titleQuery: String, detailsQuery: String, favouritesOnly: Boolean
     ): Flow<List<RecipeWithIngredients>> {
-        return dao.getAllRecipesWithIngredientsByOptionalTitleOrDetails(titleQuery, detailsQuery)
+        return dao.getAllRecipesWithIngredientsByOptions(titleQuery, detailsQuery, favouritesOnly)
     }
 
     override suspend fun getRecipesOfIngredientByIngredientName(ingredientName: String): List<IngredientWithRecipes> {

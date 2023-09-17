@@ -1,4 +1,4 @@
-package com.myprojects.reciper.ui
+package com.myprojects.reciper.ui.shared.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

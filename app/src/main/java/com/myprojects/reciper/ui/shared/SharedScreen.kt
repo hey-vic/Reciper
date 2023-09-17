@@ -1,4 +1,4 @@
-package com.myprojects.reciper.ui.shared_state
+package com.myprojects.reciper.ui.shared
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState

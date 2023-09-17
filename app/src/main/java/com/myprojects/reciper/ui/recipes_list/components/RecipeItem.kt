@@ -1,4 +1,4 @@
-package com.myprojects.reciper.ui.recipes_list
+package com.myprojects.reciper.ui.recipes_list.components
 
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.myprojects.reciper.R
 import com.myprojects.reciper.data.entities.Recipe
+import com.myprojects.reciper.ui.recipes_list.RecipesListEvent
+import com.myprojects.reciper.ui.theme.DarkRed
 import com.myprojects.reciper.ui.theme.montserratFamily
 
 @Composable
@@ -84,15 +87,19 @@ fun RecipeItem(
             },
             modifier = Modifier
                 .padding(14.dp)
-                .size(22.dp, 19.dp)
                 .align(Alignment.TopEnd)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.7f))
+                .size(32.dp)
+                .padding(6.dp)
+                .padding(top = 1.dp)
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(
                     id = if (recipe.isFavourites) R.drawable.ic_heart_filled else R.drawable.ic_heart_unfilled
                 ),
                 contentDescription = "Add to Favourites",
-                tint = Color.White
+                tint = DarkRed
             )
         }
         Column(

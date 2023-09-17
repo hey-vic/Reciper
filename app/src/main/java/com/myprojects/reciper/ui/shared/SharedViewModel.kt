@@ -1,4 +1,4 @@
-package com.myprojects.reciper.ui.shared_state
+package com.myprojects.reciper.ui.shared
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

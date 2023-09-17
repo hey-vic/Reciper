@@ -1,4 +1,4 @@
-package com.myprojects.reciper.ui
+package com.myprojects.reciper.ui.shared.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -65,8 +65,16 @@ interface RecipeDao {
     fun getAllRecipesWithIngredientsByTitle(titleQuery: String): Flow<List<RecipeWithIngredients>>
 
     @Transaction
+    @Query("SELECT * FROM recipe WHERE title LIKE '%' || :titleQuery || '%' AND isFavourites = 1")
+    fun getAllRecipesWithIngredientsByTitleFavouritesOnly(titleQuery: String): Flow<List<RecipeWithIngredients>>
+
+    @Transaction
     @Query("SELECT * FROM recipe WHERE details LIKE '%' || :detailsQuery || '%'")
     fun getAllRecipesWithIngredientsByDetails(detailsQuery: String): Flow<List<RecipeWithIngredients>>
+
+    @Transaction
+    @Query("SELECT * FROM recipe WHERE details LIKE '%' || :detailsQuery || '%' AND isFavourites = 1")
+    fun getAllRecipesWithIngredientsByDetailsFavouritesOnly(detailsQuery: String): Flow<List<RecipeWithIngredients>>
 
     @Transaction
     @Query(
@@ -78,20 +86,49 @@ interface RecipeDao {
         titleQuery: String, detailsQuery: String
     ): Flow<List<RecipeWithIngredients>>
 
-    fun getAllRecipesWithIngredientsByOptionalTitleOrDetails(
+    @Transaction
+    @Query(
+        "SELECT * FROM recipe " +
+                "WHERE (title LIKE '%' || :titleQuery || '%'" +
+                "OR details LIKE '%' || :detailsQuery || '%') AND isFavourites = 1"
+    )
+    fun getAllRecipesWithIngredientsByTitleAndDetailsFavouritesOnly(
         titleQuery: String, detailsQuery: String
+    ): Flow<List<RecipeWithIngredients>>
+
+    fun getAllRecipesWithIngredientsByOptions(
+        titleQuery: String,
+        detailsQuery: String,
+        favouritesOnly: Boolean
     ): Flow<List<RecipeWithIngredients>> {
         return when {
 
-            titleQuery.isNotBlank() && detailsQuery.isBlank() -> getAllRecipesWithIngredientsByTitle(
-                titleQuery
-            )
+            titleQuery.isNotBlank() && detailsQuery.isBlank() -> {
+                if (favouritesOnly) {
+                    getAllRecipesWithIngredientsByTitleFavouritesOnly(titleQuery)
+                } else {
+                    getAllRecipesWithIngredientsByTitle(titleQuery)
+                }
+            }
 
-            titleQuery.isBlank() && detailsQuery.isNotBlank() -> getAllRecipesWithIngredientsByDetails(
-                detailsQuery
-            )
+            titleQuery.isBlank() && detailsQuery.isNotBlank() -> {
+                if (favouritesOnly) {
+                    getAllRecipesWithIngredientsByDetailsFavouritesOnly(detailsQuery)
+                } else {
+                    getAllRecipesWithIngredientsByDetails(detailsQuery)
+                }
+            }
 
-            else -> getAllRecipesWithIngredientsByTitleAndDetails(titleQuery, detailsQuery)
+            else -> {
+                if (favouritesOnly) {
+                    getAllRecipesWithIngredientsByTitleAndDetailsFavouritesOnly(
+                        titleQuery,
+                        detailsQuery
+                    )
+                } else {
+                    getAllRecipesWithIngredientsByTitleAndDetails(titleQuery, detailsQuery)
+                }
+            }
         }
     }
 

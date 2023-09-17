@@ -24,8 +24,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.myprojects.reciper.ui.add_edit_recipe.AddEditRecipeScreen
 import com.myprojects.reciper.ui.recipes_list.RecipesListScreen
-import com.myprojects.reciper.ui.shared_state.SharedScreen
-import com.myprojects.reciper.ui.shared_state.SharedViewModel
+import com.myprojects.reciper.ui.shared.SharedScreen
+import com.myprojects.reciper.ui.shared.SharedViewModel
 import com.myprojects.reciper.ui.theme.ReciperTheme
 import com.myprojects.reciper.util.Routes
 import dagger.hilt.android.AndroidEntryPoint
