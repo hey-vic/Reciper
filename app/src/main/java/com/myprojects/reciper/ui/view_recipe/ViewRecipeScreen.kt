@@ -92,10 +92,25 @@ fun ViewRecipeScreen(
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             CustomToolbar()
+            IconButton(
+                onClick = {
+                    viewModel.onEvent(ViewRecipeEvent.OnBackButtonClick)
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 16.dp)
+                    .size(22.dp)
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
+                    tint = Color.White,
+                    contentDescription = "Back"
+                )
+            }
             Row(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(end = 10.dp),
+                    .padding(end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -103,7 +118,7 @@ fun ViewRecipeScreen(
                     onClick = {
                         viewModel.onEvent(ViewRecipeEvent.OnExportRecipeClick)
                     },
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(22.dp)
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_export),
@@ -115,7 +130,7 @@ fun ViewRecipeScreen(
                     onClick = {
                         viewModel.onEvent(ViewRecipeEvent.OnEditRecipeClick)
                     },
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(22.dp)
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_edit),

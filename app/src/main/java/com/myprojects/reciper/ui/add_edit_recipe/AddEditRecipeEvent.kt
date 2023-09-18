@@ -13,4 +13,5 @@ sealed interface AddEditRecipeEvent {
     object OnSaveRecipeClick : AddEditRecipeEvent
     data class OnLocallySavedImageUriChange(val newUri: Uri?) : AddEditRecipeEvent
     data class OnDisplayedImageUriChange(val newUri: Uri?) : AddEditRecipeEvent
+    object OnBackButtonClick : AddEditRecipeEvent
 }

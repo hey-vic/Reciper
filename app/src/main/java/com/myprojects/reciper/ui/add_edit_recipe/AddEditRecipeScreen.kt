@@ -1,6 +1,5 @@
 package com.myprojects.reciper.ui.add_edit_recipe
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -62,7 +61,6 @@ import com.myprojects.reciper.ui.theme.DarkRed
 import com.myprojects.reciper.ui.theme.montserratFamily
 import com.myprojects.reciper.util.UIEvent
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddEditRecipeScreen(
@@ -148,14 +146,30 @@ fun AddEditRecipeScreen(
                 )
             }
         }
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(BackgroundColor)
+                .padding(paddingValues = paddingValues)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 CustomToolbar()
+                IconButton(
+                    onClick = {
+                        viewModel.onEvent(AddEditRecipeEvent.OnBackButtonClick)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 16.dp)
+                        .size(22.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
+                        tint = Color.White,
+                        contentDescription = "Back"
+                    )
+                }
                 viewModel.recipe?.let {
                     IconButton(
                         onClick = {

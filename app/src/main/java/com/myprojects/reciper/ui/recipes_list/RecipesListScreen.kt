@@ -1,6 +1,5 @@
 package com.myprojects.reciper.ui.recipes_list
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -45,7 +45,6 @@ import com.myprojects.reciper.ui.theme.DarkRed
 import com.myprojects.reciper.util.UIEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun RecipesListScreen(
     onNavigate: (UIEvent.Navigate) -> Unit,
@@ -80,11 +79,12 @@ fun RecipesListScreen(
                     painter = painterResource(id = R.drawable.ic_plus), contentDescription = "Add"
                 )
             }
-        }) {
+        }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(BackgroundColor)
+                .padding(paddingValues = paddingValues)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 CustomToolbar()

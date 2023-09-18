@@ -178,6 +178,12 @@ class AddEditRecipeViewModel @Inject constructor(
             is AddEditRecipeEvent.OnDisplayedImageUriChange -> {
                 displayedImageUri = event.newUri
             }
+
+            AddEditRecipeEvent.OnBackButtonClick -> {
+                sendUiEvent(
+                    UIEvent.PopBackStack
+                )
+            }
         }
     }
 

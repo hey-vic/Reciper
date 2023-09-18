@@ -53,7 +53,6 @@ class ViewRecipeViewModel @Inject constructor(
 
     fun onEvent(event: ViewRecipeEvent) {
         when (event) {
-
             is ViewRecipeEvent.OnExportRecipeClick -> {
                 sendUiEvent(UIEvent.ShowSnackbar("Not implemented"))
             }
@@ -64,6 +63,12 @@ class ViewRecipeViewModel @Inject constructor(
                         UIEvent.Navigate(Routes.ADD_EDIT_RECIPE + "?recipeId=${recipe.recipeId}")
                     )
                 }
+            }
+
+            ViewRecipeEvent.OnBackButtonClick -> {
+                sendUiEvent(
+                    UIEvent.PopBackStack
+                )
             }
         }
     }
