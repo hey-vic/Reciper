@@ -30,6 +30,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -56,8 +57,7 @@ import com.myprojects.reciper.data.entities.Ingredient
 import com.myprojects.reciper.data.entities.Recipe
 import com.myprojects.reciper.ui.shared.components.CustomTextField
 import com.myprojects.reciper.ui.shared.components.CustomToolbar
-import com.myprojects.reciper.ui.theme.BackgroundColor
-import com.myprojects.reciper.ui.theme.DarkRed
+import com.myprojects.reciper.ui.theme.LightBackground
 import com.myprojects.reciper.ui.theme.montserratFamily
 import com.myprojects.reciper.util.UIEvent
 
@@ -70,8 +70,7 @@ fun AddEditRecipeScreen(
     showSnackbar: (String, String?, () -> Unit) -> Unit,
     onRecipeDelete: (
         deletedRecipe: Recipe?,
-        deletedIngredients: List<Ingredient>?,
-        deletedImageUri: Uri?
+        deletedIngredients: List<Ingredient>?
     ) -> Unit,
     onUndoDelete: () -> Unit,
     onImageSave: (String, Uri) -> Uri?,
@@ -110,7 +109,7 @@ fun AddEditRecipeScreen(
                 }
 
                 is UIEvent.DeleteRecipe -> {
-                    onRecipeDelete(event.recipe, event.ingredients, event.imageUri)
+                    onRecipeDelete(event.recipe, event.ingredients)
                 }
 
                 is UIEvent.PopToMain -> {
@@ -125,7 +124,7 @@ fun AddEditRecipeScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                containerColor = DarkRed,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White,
                 onClick = {
                     if (viewModel.isTitleUnique) {
@@ -150,7 +149,7 @@ fun AddEditRecipeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundColor)
+                .background(LightBackground)
                 .padding(paddingValues = paddingValues)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {

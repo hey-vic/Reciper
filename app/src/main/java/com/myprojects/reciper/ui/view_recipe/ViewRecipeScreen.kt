@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.LocalMinimumTouchTargetEnforcement
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -45,10 +47,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.myprojects.reciper.R
 import com.myprojects.reciper.ui.shared.components.CustomToolbar
-import com.myprojects.reciper.ui.theme.BackgroundColor
-import com.myprojects.reciper.ui.theme.DarkRed
-import com.myprojects.reciper.ui.theme.LightGray
-import com.myprojects.reciper.ui.theme.Mint
 import com.myprojects.reciper.ui.theme.montserratFamily
 import com.myprojects.reciper.util.UIEvent
 
@@ -88,7 +86,7 @@ fun ViewRecipeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundColor)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             CustomToolbar()
@@ -103,7 +101,7 @@ fun ViewRecipeScreen(
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = "Back"
                 )
             }
@@ -122,7 +120,7 @@ fun ViewRecipeScreen(
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_export),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         contentDescription = "Export"
                     )
                 }
@@ -134,7 +132,7 @@ fun ViewRecipeScreen(
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_edit),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         contentDescription = "Edit"
                     )
                 }
@@ -160,7 +158,7 @@ fun ViewRecipeScreen(
                             .fillMaxSize()
                             .padding(16.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color.White)
+                            .background(MaterialTheme.colorScheme.surface)
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -170,28 +168,33 @@ fun ViewRecipeScreen(
                                 .padding(bottom = 4.dp),
                             verticalAlignment = Alignment.Top
                         ) {
-                            Text(
-                                text = recipe.title,
-                                style = TextStyle(
-                                    fontSize = 30.sp,
-                                    fontWeight = FontWeight.Light,
-                                    fontFamily = montserratFamily
-                                ),
-                                modifier = Modifier.weight(1f)
-                            )
+                            SelectionContainer(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = recipe.title,
+                                    style = TextStyle(
+                                        fontSize = 30.sp,
+                                        fontWeight = FontWeight.Light,
+                                        fontFamily = montserratFamily
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                             Icon(
                                 imageVector = ImageVector.vectorResource(
                                     id = if (recipe.isFavourites) R.drawable.ic_heart_filled else R.drawable.ic_heart_unfilled
                                 ),
                                 contentDescription = "Add to Favourites",
-                                tint = DarkRed,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .padding(top = 8.dp)
                                     .size(24.dp)
                             )
                         }
 
-                        Divider(modifier = Modifier.padding(bottom = 8.dp), color = LightGray)
+                        Divider(
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
 
                         recipe.cookingTime?.let { cookingTime ->
                             Row(
@@ -203,7 +206,7 @@ fun ViewRecipeScreen(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_time),
                                     contentDescription = "Cooking time",
                                     modifier = Modifier.size(30.dp),
-                                    tint = LightGray
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
                                     text = cookingTime,
@@ -211,7 +214,7 @@ fun ViewRecipeScreen(
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Normal,
                                         fontFamily = montserratFamily,
-                                        color = LightGray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     ),
                                     modifier = Modifier.padding(bottom = 2.dp)
                                 )
@@ -219,7 +222,7 @@ fun ViewRecipeScreen(
                         }
 
                         FlowRow(
-                            Modifier
+                            modifier = Modifier
                                 .fillMaxWidth()
                                 .absoluteOffset((-4).dp)
                         ) {
@@ -231,7 +234,7 @@ fun ViewRecipeScreen(
                                         label = {
                                             Text(
                                                 ingredient.ingredientName,
-                                                color = Mint,
+                                                color = MaterialTheme.colorScheme.secondary,
                                                 fontFamily = montserratFamily
                                             )
                                         },
@@ -240,10 +243,9 @@ fun ViewRecipeScreen(
                                         shape = RoundedCornerShape(4.dp),
                                         colors = InputChipDefaults.inputChipColors(
                                             disabledContainerColor = Color.Transparent,
-
-                                            ),
+                                        ),
                                         border = InputChipDefaults.inputChipBorder(
-                                            disabledBorderColor = Mint,
+                                            disabledBorderColor = MaterialTheme.colorScheme.secondary,
                                             borderWidth = 1.dp
                                         )
                                     )
@@ -251,15 +253,17 @@ fun ViewRecipeScreen(
                             }
                         }
 
-                        Text(
-                            text = recipe.details,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp, top = 8.dp),
-                            fontFamily = montserratFamily,
-                            fontSize = 14.sp
-                        )
-
+                        SelectionContainer {
+                            Text(
+                                text = recipe.details,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 4.dp, top = 8.dp),
+                                fontFamily = montserratFamily,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(100.dp))

@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -16,7 +17,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.myprojects.reciper.ui.theme.Mint
 import com.myprojects.reciper.ui.theme.montserratFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,11 +39,11 @@ fun CustomTextField(
             onValueChange(it)
         },
         placeholder = {
-            Text(placeholder, color = Mint)
+            Text(placeholder, color = MaterialTheme.colorScheme.secondary)
         },
         modifier = modifier,
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.onPrimary,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
@@ -61,7 +61,7 @@ fun CustomTextField(
                 Icon(
                     imageVector = ImageVector.vectorResource(leadingIconRes),
                     contentDescription = leadingIconDescr,
-                    tint = Mint
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
         } else null,
@@ -70,7 +70,7 @@ fun CustomTextField(
                 Icon(
                     imageVector = ImageVector.vectorResource(trailingIconRes),
                     contentDescription = trailingIconDescr,
-                    tint = Mint,
+                    tint = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.clickable { trailingIconOnClick() }
                 )
             }

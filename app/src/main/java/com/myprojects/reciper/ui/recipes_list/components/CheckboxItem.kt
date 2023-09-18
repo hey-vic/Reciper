@@ -10,18 +10,16 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalMinimumTouchTargetEnforcement
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.myprojects.reciper.ui.theme.LightGray
-import com.myprojects.reciper.ui.theme.Mint
 import com.myprojects.reciper.ui.theme.montserratFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,14 +34,16 @@ fun CheckboxItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.onPrimary)
             .clickable { onCheckedChange(!isChecked) }
             .padding(start = 10.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
             text = text,
-            color = if (isChecked) Mint else LightGray,
+            color = if (isChecked) {
+                MaterialTheme.colorScheme.secondary
+            } else MaterialTheme.colorScheme.onSurfaceVariant,
             style = TextStyle(fontFamily = montserratFamily, fontWeight = FontWeight.Medium)
         )
 
@@ -56,8 +56,8 @@ fun CheckboxItem(
                 modifier = Modifier
                     .padding(vertical = 5.dp, horizontal = 10.dp),
                 colors = CheckboxDefaults.colors(
-                    checkedColor = Mint,
-                    uncheckedColor = LightGray
+                    checkedColor = MaterialTheme.colorScheme.secondary,
+                    uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
         }

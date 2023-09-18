@@ -1,6 +1,5 @@
 package com.myprojects.reciper.ui.recipes_list.components
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,13 +11,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,7 +30,6 @@ import coil.compose.AsyncImage
 import com.myprojects.reciper.R
 import com.myprojects.reciper.data.entities.Recipe
 import com.myprojects.reciper.ui.recipes_list.RecipesListEvent
-import com.myprojects.reciper.ui.theme.DarkRed
 import com.myprojects.reciper.ui.theme.montserratFamily
 
 @Composable
@@ -43,18 +37,8 @@ fun RecipeItem(
     recipe: Recipe,
     ingredientNames: List<String>,
     onEvent: (RecipesListEvent) -> Unit,
-    modifier: Modifier = Modifier,
-    onImageLoad: suspend (Uri) -> Uri?
+    modifier: Modifier = Modifier
 ) {
-    var imageUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-
-    LaunchedEffect(key1 = recipe.relatedImageUri) {
-        recipe.relatedImageUri?.let { uri ->
-            imageUri = onImageLoad(Uri.parse(uri))
-        }
-    }
 
     Box(
         modifier = modifier
@@ -63,7 +47,7 @@ fun RecipeItem(
             .clip(RoundedCornerShape(10.dp))
     ) {
         AsyncImage(
-            model = imageUri ?: R.drawable.image_placeholder,
+            model = recipe.relatedImageUri ?: R.drawable.image_placeholder,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -87,7 +71,7 @@ fun RecipeItem(
                 .padding(10.dp)
                 .align(Alignment.TopEnd)
                 .clip(RoundedCornerShape(6.dp))
-                .background(Color.White.copy(alpha = 0.8f))
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
                 .size(32.dp)
                 .padding(6.dp)
                 .padding(top = 1.dp)
@@ -97,7 +81,7 @@ fun RecipeItem(
                     id = if (recipe.isFavourites) R.drawable.ic_heart_filled else R.drawable.ic_heart_unfilled
                 ),
                 contentDescription = "Add to Favourites",
-                tint = DarkRed
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         Column(
@@ -110,7 +94,7 @@ fun RecipeItem(
                 fontFamily = montserratFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 lineHeight = 16.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -122,7 +106,7 @@ fun RecipeItem(
                 fontWeight = FontWeight.Medium,
                 lineHeight = 12.sp,
                 fontSize = 10.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )

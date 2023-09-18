@@ -1,6 +1,5 @@
 package com.myprojects.reciper
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -10,12 +9,14 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -39,7 +40,6 @@ import java.io.IOException
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,17 +59,17 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState)
                     }
-                ) {
+                ) { paddingValues ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.RECIPES_LIST
+                        startDestination = Routes.RECIPES_LIST,
+                        modifier = Modifier.padding(paddingValues = paddingValues)
                     ) {
                         composable(Routes.RECIPES_LIST) {
                             RecipesListScreen(
                                 onNavigate = {
                                     navController.navigate(it.route)
-                                },
-                                onImageLoad = { uri -> loadPhotoFromInternalStorage(uri) }
+                                }
                             )
                         }
                         composable(
@@ -86,7 +86,10 @@ class MainActivity : ComponentActivity() {
                                     navController.popBackStack()
                                 },
                                 onPopToMain = {
-                                    navController.popBackStack(Routes.RECIPES_LIST, inclusive = false)
+                                    navController.popBackStack(
+                                        Routes.RECIPES_LIST,
+                                        inclusive = false
+                                    )
                                 },
                                 showSnackbar = { message, actionLabel, onActionPerformed ->
                                     sharedScreen.showSnackbar(
@@ -95,7 +98,7 @@ class MainActivity : ComponentActivity() {
                                         onActionPerformed
                                     )
                                 },
-                                onRecipeDelete = { recipe, ingredients, imageUri ->
+                                onRecipeDelete = { recipe, ingredients ->
                                     sharedViewModel.cacheDeletedRecipe(
                                         recipe,
                                         ingredients
