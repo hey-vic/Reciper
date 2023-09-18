@@ -71,7 +71,7 @@ fun RecipeItem(
                 .padding(10.dp)
                 .align(Alignment.TopEnd)
                 .clip(RoundedCornerShape(6.dp))
-                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
+                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f))
                 .size(32.dp)
                 .padding(6.dp)
                 .padding(top = 1.dp)

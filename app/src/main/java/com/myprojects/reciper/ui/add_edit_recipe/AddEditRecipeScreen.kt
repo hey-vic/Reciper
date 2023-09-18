@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,20 +24,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.LocalMinimumTouchTargetEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -57,7 +60,6 @@ import com.myprojects.reciper.data.entities.Ingredient
 import com.myprojects.reciper.data.entities.Recipe
 import com.myprojects.reciper.ui.shared.components.CustomTextField
 import com.myprojects.reciper.ui.shared.components.CustomToolbar
-import com.myprojects.reciper.ui.theme.LightBackground
 import com.myprojects.reciper.ui.theme.montserratFamily
 import com.myprojects.reciper.util.UIEvent
 
@@ -128,14 +130,14 @@ fun AddEditRecipeScreen(
                 contentColor = Color.White,
                 onClick = {
                     if (viewModel.isTitleUnique) {
-                        viewModel.displayedImageUri?.let { uri ->
-                            val imageFilename = "${viewModel.title}_image"
-                            viewModel.onEvent(
-                                AddEditRecipeEvent.OnLocallySavedImageUriChange(
+                        viewModel.onEvent(
+                            AddEditRecipeEvent.OnLocallySavedImageUriChange(
+                                viewModel.displayedImageUri?.let { uri ->
+                                    val imageFilename = "${viewModel.title}_image"
                                     onImageSave(imageFilename, uri)
-                                )
+                                }
                             )
-                        }
+                        )
                     }
                     viewModel.onEvent(AddEditRecipeEvent.OnSaveRecipeClick)
                 }) {
@@ -149,7 +151,7 @@ fun AddEditRecipeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LightBackground)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues = paddingValues)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -165,7 +167,7 @@ fun AddEditRecipeScreen(
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         contentDescription = "Back"
                     )
                 }
@@ -174,31 +176,23 @@ fun AddEditRecipeScreen(
                         onClick = {
                             viewModel.onEvent(AddEditRecipeEvent.OnDeleteRecipeClick)
                         },
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
+                        modifier = Modifier.align(Alignment.CenterEnd)
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             contentDescription = "Delete"
                         )
                     }
                 }
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     AsyncImage(
-                        model = if (viewModel.displayedImageUri != null) {
+                        model = viewModel.displayedImageUri?.let {
                             viewModel.displayedImageUri
-                        } else {
-                            R.drawable.image_placeholder
-                        },
+                        } ?: R.drawable.image_placeholder,
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -207,44 +201,119 @@ fun AddEditRecipeScreen(
                     )
                 }
                 item {
-                    Button(onClick = {
-                        photoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    }) {
-                        Text(text = "Pick one photo")
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
+                            .padding(8.dp)
+                            .height(40.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                viewModel.onEvent(AddEditRecipeEvent.OnDisplayedImageUriChange(null))
+                            },
+                            enabled = viewModel.displayedImageUri != null,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                disabledContainerColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f)
+                        ) {
+                            Text(text = "Delete image")
+                        }
+                        Button(
+                            onClick = {
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f)
+                        ) {
+                            Text(
+                                text = viewModel.displayedImageUri?.let {
+                                    "Choose another"
+                                } ?: "Add an image"
+                            )
+                        }
                     }
                 }
                 item {
-                    CustomTextField(
-                        placeholder = "Title",
-                        value = viewModel.title,
-                        onValueChange = {
-                            viewModel.onEvent(AddEditRecipeEvent.OnTitleChange(it))
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                    Text(
+                        text = "Title",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = montserratFamily,
+                            color = MaterialTheme.colorScheme.secondary
+                        ),
+                        modifier = Modifier.padding(start = 28.dp)
                     )
                 }
                 item {
                     CustomTextField(
-                        placeholder = "Details",
-                        value = viewModel.details,
+                        placeholder = "",
+                        value = viewModel.title,
                         onValueChange = {
-                            viewModel.onEvent(AddEditRecipeEvent.OnDetailsChange(it))
+                            viewModel.onEvent(AddEditRecipeEvent.OnTitleChange(it))
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 100
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 4.dp, bottom = 16.dp),
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        textColor = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                item {
+                    Text(
+                        text = "Cooking time (optional)",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = montserratFamily,
+                            color = MaterialTheme.colorScheme.secondary,
+                        ),
+                        modifier = Modifier.padding(start = 28.dp)
+                    )
+                }
+                item {
+                    CustomTextField(
+                        placeholder = "",
+                        value = viewModel.cookingTime ?: "",
+                        onValueChange = {
+                            viewModel.onEvent(AddEditRecipeEvent.OnCookingTimeChange(it))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp, start = 16.dp, end = 16.dp),
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        textColor = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 item {
                     Text(
                         text = "Ingredients",
                         style = TextStyle(
-                            fontSize = 20.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             fontFamily = montserratFamily,
-                            color = Color.Black
-                        )
+                            color = MaterialTheme.colorScheme.secondary,
+                        ),
+                        modifier = Modifier.padding(start = 28.dp, top = 24.dp)
                     )
                 }
                 item {
@@ -255,61 +324,77 @@ fun AddEditRecipeScreen(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = montserratFamily,
-                                color = Color.Gray
-                            )
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            ),
+                            modifier = Modifier.padding(start = 28.dp, top = 18.dp, bottom = 16.dp)
                         )
                     } else {
                         FlowRow(
-                            Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp, end = 24.dp, bottom = 8.dp, top = 4.dp)
                         ) {
                             viewModel.currentIngredients.forEachIndexed { index, ingredient ->
-                                InputChip(
-                                    modifier = Modifier
-                                        .padding(horizontal = 8.dp)
-                                        .align(alignment = Alignment.CenterVertically),
-                                    onClick = { },
-                                    label = { Text(ingredient.ingredientName) },
-                                    selected = true,
-                                    trailingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = "Remove",
-                                            modifier =
-                                            Modifier.clickable(
-                                                interactionSource = interactionSource,
-                                                indication = null
-                                            ) {
-                                                viewModel.onEvent(
-                                                    AddEditRecipeEvent.OnRemoveIngredientFromList(
-                                                        index
+                                CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                                    InputChip(
+                                        modifier = Modifier.padding(4.dp),
+                                        onClick = { },
+                                        label = {
+                                            Text(
+                                                ingredient.ingredientName,
+                                                fontFamily = montserratFamily,
+                                                color = MaterialTheme.colorScheme.onSecondary
+                                            )
+                                        },
+                                        selected = false,
+                                        shape = RoundedCornerShape(8.dp),
+                                        colors = InputChipDefaults.inputChipColors(
+                                            containerColor = MaterialTheme.colorScheme.secondary,
+                                            trailingIconColor = MaterialTheme.colorScheme.onSecondary
+                                        ),
+                                        border = InputChipDefaults.inputChipBorder(
+                                            borderColor = MaterialTheme.colorScheme.secondary
+                                        ),
+                                        trailingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.Clear,
+                                                contentDescription = "Remove",
+                                                modifier = Modifier.clickable(
+                                                    interactionSource = interactionSource,
+                                                    indication = null
+                                                ) {
+                                                    viewModel.onEvent(
+                                                        AddEditRecipeEvent.OnRemoveIngredientFromList(
+                                                            index
+                                                        )
                                                     )
-                                                )
-                                            }
-                                        )
-                                    }
-                                )
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
                 }
                 item {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        TextField(
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp)
+                    ) {
+                        CustomTextField(
+                            placeholder = "Add a new ingredient...",
                             value = viewModel.newIngredientName,
                             onValueChange = {
                                 viewModel.onEvent(
                                     AddEditRecipeEvent.OnNewIngredientNameChange(it)
                                 )
                             },
-                            modifier = Modifier
-                                .weight(1f),
-                            shape = RoundedCornerShape(16.dp),
-                            placeholder = { Text(text = "Add a new ingredient...") },
-                            colors = TextFieldDefaults.textFieldColors(
-                                containerColor = Color.White,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
+                            modifier = Modifier.weight(1f),
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            textColor = MaterialTheme.colorScheme.onSurface
                         )
                         IconButton(
                             modifier = Modifier
@@ -317,28 +402,48 @@ fun AddEditRecipeScreen(
                                 .padding(start = 8.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .size(40.dp)
-                                .background(Color(0xFF960F0F)),
+                                .background(MaterialTheme.colorScheme.primary),
                             onClick = {
                                 viewModel.onEvent(
                                     AddEditRecipeEvent.OnAddIngredientToList
                                 )
                             }) {
                             Icon(
-                                imageVector = Icons.Default.Check,
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_check),
                                 tint = Color.White,
-                                contentDescription = "Add"
+                                contentDescription = "Add",
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
                 }
                 item {
+                    Text(
+                        text = "Details",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = montserratFamily,
+                            color = MaterialTheme.colorScheme.secondary
+                        ),
+                        modifier = Modifier.padding(start = 28.dp)
+                    )
+                }
+                item {
                     CustomTextField(
-                        placeholder = "Cooking time (optional)",
-                        value = viewModel.cookingTime ?: "",
+                        placeholder = "",
+                        value = viewModel.details,
                         onValueChange = {
-                            viewModel.onEvent(AddEditRecipeEvent.OnCookingTimeChange(it))
+                            viewModel.onEvent(AddEditRecipeEvent.OnDetailsChange(it))
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 4.dp, bottom = 16.dp)
+                            .defaultMinSize(minHeight = 160.dp),
+                        maxLines = 100,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        textColor = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 item {

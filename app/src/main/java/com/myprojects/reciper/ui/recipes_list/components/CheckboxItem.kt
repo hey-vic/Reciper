@@ -33,7 +33,7 @@ fun CheckboxItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.onPrimary)
             .clickable { onCheckedChange(!isChecked) }
             .padding(start = 10.dp),

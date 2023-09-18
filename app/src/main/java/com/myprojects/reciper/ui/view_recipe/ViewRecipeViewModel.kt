@@ -60,15 +60,25 @@ class ViewRecipeViewModel @Inject constructor(
             is ViewRecipeEvent.OnEditRecipeClick -> {
                 _recipe.value?.let { recipe ->
                     sendUiEvent(
-                        UIEvent.Navigate(Routes.ADD_EDIT_RECIPE + "?recipeId=${recipe.recipeId}")
+                        UIEvent.Navigate(
+                            Routes.ADD_EDIT_RECIPE + "?recipeId=${recipe.recipeId}"
+                        )
                     )
                 }
             }
 
-            ViewRecipeEvent.OnBackButtonClick -> {
-                sendUiEvent(
-                    UIEvent.PopBackStack
-                )
+            is ViewRecipeEvent.OnBackButtonClick -> {
+                sendUiEvent(UIEvent.PopBackStack)
+            }
+
+            is ViewRecipeEvent.OnFavouritesChange -> {
+                _recipe.value?.let { recipe ->
+                    viewModelScope.launch {
+                        val updatedRecipe = recipe.copy(isFavourites = !recipe.isFavourites)
+                        _recipe.value = updatedRecipe
+                        repository.upsertRecipe(updatedRecipe)
+                    }
+                }
             }
         }
     }

@@ -39,7 +39,6 @@ import com.myprojects.reciper.R
 import com.myprojects.reciper.ui.recipes_list.components.RecipeItem
 import com.myprojects.reciper.ui.recipes_list.components.SearchSection
 import com.myprojects.reciper.ui.shared.components.CustomToolbar
-import com.myprojects.reciper.ui.theme.LightPrimary
 import com.myprojects.reciper.util.UIEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,8 +130,7 @@ fun RecipesListScreen(
                     onShouldSearchInFavouritesChange = {
                         viewModel.onEvent(RecipesListEvent.OnShouldSearchInFavouritesChange(it))
                     },
-                    modifier = Modifier.background(LightPrimary)
-                    //modifier = Modifier.background(Color(0xFF1F1111))
+                    modifier = Modifier.background(MaterialTheme.colorScheme.primary)
                 )
             }
             LazyVerticalGrid(

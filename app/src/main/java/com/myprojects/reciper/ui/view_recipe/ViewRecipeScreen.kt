@@ -82,7 +82,6 @@ fun ViewRecipeScreen(
 
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -110,7 +109,7 @@ fun ViewRecipeScreen(
                     .align(Alignment.CenterEnd)
                     .padding(end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 IconButton(
                     onClick = {
@@ -179,16 +178,26 @@ fun ViewRecipeScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
-                            Icon(
-                                imageVector = ImageVector.vectorResource(
-                                    id = if (recipe.isFavourites) R.drawable.ic_heart_filled else R.drawable.ic_heart_unfilled
-                                ),
-                                contentDescription = "Add to Favourites",
-                                tint = MaterialTheme.colorScheme.primary,
+                            IconButton(
+                                onClick = {
+                                    viewModel.onEvent(ViewRecipeEvent.OnFavouritesChange)
+                                },
                                 modifier = Modifier
                                     .padding(top = 8.dp)
                                     .size(24.dp)
-                            )
+                            ) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(
+                                        id = if (recipe.isFavourites) {
+                                            R.drawable.ic_heart_filled
+                                        } else {
+                                            R.drawable.ic_heart_unfilled
+                                        }
+                                    ),
+                                    contentDescription = "Add to Favourites",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
 
                         Divider(

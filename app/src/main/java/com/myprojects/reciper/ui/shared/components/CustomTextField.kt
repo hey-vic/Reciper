@@ -31,7 +31,9 @@ fun CustomTextField(
     leadingIconDescr: String? = null,
     trailingIconRes: Int? = null,
     trailingIconDescr: String? = null,
-    trailingIconOnClick: () -> Unit = { }
+    trailingIconOnClick: () -> Unit = { },
+    containerColor: Color = MaterialTheme.colorScheme.onPrimary,
+    textColor: Color = MaterialTheme.colorScheme.background
 ) {
     TextField(
         value = value,
@@ -43,11 +45,12 @@ fun CustomTextField(
         },
         modifier = modifier,
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = containerColor,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            textColor = textColor
         ),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
         textStyle = TextStyle(
             fontFamily = montserratFamily,
             fontWeight = FontWeight.Medium,
@@ -55,8 +58,7 @@ fun CustomTextField(
         ),
         maxLines = maxLines,
         singleLine = (maxLines == 1),
-        leadingIcon =
-        if (leadingIconRes != null) {
+        leadingIcon = if (leadingIconRes != null) {
             {
                 Icon(
                     imageVector = ImageVector.vectorResource(leadingIconRes),

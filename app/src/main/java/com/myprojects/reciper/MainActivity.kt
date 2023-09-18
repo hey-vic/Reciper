@@ -6,12 +6,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
@@ -57,7 +58,12 @@ class MainActivity : ComponentActivity() {
                 val sharedViewModel: SharedViewModel = hiltViewModel()
                 Scaffold(
                     snackbarHost = {
-                        SnackbarHost(hostState = snackbarHostState)
+                        SnackbarHost(hostState = snackbarHostState) {
+                            Snackbar(
+                                actionColor = MaterialTheme.colorScheme.secondary,
+                                snackbarData = it
+                            )
+                        }
                     }
                 ) { paddingValues ->
                     NavHost(
@@ -132,7 +138,6 @@ class MainActivity : ComponentActivity() {
                                     )
                                 },
                                 onNavigate = {
-                                    Log.e("NAVIGATE", "from main to ${it.route}")
                                     navController.navigate(it.route)
                                 }
                             )
