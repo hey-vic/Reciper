@@ -6,6 +6,7 @@ import com.myprojects.reciper.data.entities.Recipe
 
 sealed interface UIEvent {
     object PopBackStack : UIEvent
+    object PopToMain : UIEvent
     data class Navigate(val route: String) : UIEvent
     data class ShowSnackbar(
         val message: String,

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +28,7 @@ import com.myprojects.reciper.ui.recipes_list.RecipesListScreen
 import com.myprojects.reciper.ui.shared.SharedScreen
 import com.myprojects.reciper.ui.shared.SharedViewModel
 import com.myprojects.reciper.ui.theme.ReciperTheme
+import com.myprojects.reciper.ui.view_recipe.ViewRecipeScreen
 import com.myprojects.reciper.util.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -83,6 +85,9 @@ class MainActivity : ComponentActivity() {
                                 onPopBackStack = {
                                     navController.popBackStack()
                                 },
+                                onPopToMain = {
+                                    navController.popBackStack(Routes.RECIPES_LIST, inclusive = false)
+                                },
                                 showSnackbar = { message, actionLabel, onActionPerformed ->
                                     sharedScreen.showSnackbar(
                                         message,
@@ -101,6 +106,32 @@ class MainActivity : ComponentActivity() {
                                     savePhotoToInternalStorage(filename, uri)
                                 },
                                 onImageLoad = { uri -> loadPhotoFromInternalStorage(uri) }
+                            )
+                        }
+                        composable(
+                            route = Routes.VIEW_RECIPE + "?recipeId={recipeId}",
+                            arguments = listOf(
+                                navArgument(name = "recipeId") {
+                                    type = NavType.LongType
+                                    defaultValue = -1L
+                                }
+                            )
+                        ) {
+                            ViewRecipeScreen(
+                                onPopBackStack = {
+                                    navController.popBackStack()
+                                },
+                                showSnackbar = { message, actionLabel, onActionPerformed ->
+                                    sharedScreen.showSnackbar(
+                                        message,
+                                        actionLabel,
+                                        onActionPerformed
+                                    )
+                                },
+                                onNavigate = {
+                                    Log.e("NAVIGATE", "from main to ${it.route}")
+                                    navController.navigate(it.route)
+                                }
                             )
                         }
                     }

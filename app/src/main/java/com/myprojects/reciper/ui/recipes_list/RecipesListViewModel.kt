@@ -52,7 +52,7 @@ class RecipesListViewModel @Inject constructor(
         when (event) {
             is RecipesListEvent.OnRecipeClick -> {
                 sendUiEvent(
-                    UIEvent.Navigate(Routes.ADD_EDIT_RECIPE + "?recipeId=${event.recipe.recipeId}")
+                    UIEvent.Navigate(Routes.VIEW_RECIPE + "?recipeId=${event.recipe.recipeId}")
                 )
             }
 

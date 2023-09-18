@@ -42,7 +42,7 @@ class RecipeRepositoryImpl(
         dao.deleteRecipeById(recipeId)
     }
 
-    override suspend fun getIngredientsOfRecipeByRecipeId(recipeId: Long): List<RecipeWithIngredients> {
+    override suspend fun getIngredientsOfRecipeByRecipeId(recipeId: Long): RecipeWithIngredients {
         return dao.getIngredientsOfRecipeByRecipeId(recipeId)
     }
 

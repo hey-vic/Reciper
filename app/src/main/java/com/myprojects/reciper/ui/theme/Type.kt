@@ -10,7 +10,8 @@ import com.myprojects.reciper.R
 
 val montserratFamily = FontFamily(
     Font(R.font.montserrat_semi_bold, FontWeight.SemiBold),
-    Font(R.font.montserrat_medium, FontWeight.Medium)
+    Font(R.font.montserrat_medium, FontWeight.Medium),
+    Font(R.font.montserrat_light, FontWeight.Light)
 )
 
 val sacramentoFamily = FontFamily(

@@ -67,6 +67,7 @@ import com.myprojects.reciper.util.UIEvent
 @Composable
 fun AddEditRecipeScreen(
     onPopBackStack: () -> Unit,
+    onPopToMain: () -> Unit,
     viewModel: AddEditRecipeViewModel = hiltViewModel(),
     showSnackbar: (String, String?, () -> Unit) -> Unit,
     onRecipeDelete: (
@@ -112,6 +113,10 @@ fun AddEditRecipeScreen(
 
                 is UIEvent.DeleteRecipe -> {
                     onRecipeDelete(event.recipe, event.ingredients, event.imageUri)
+                }
+
+                is UIEvent.PopToMain -> {
+                    onPopToMain()
                 }
 
                 else -> Unit

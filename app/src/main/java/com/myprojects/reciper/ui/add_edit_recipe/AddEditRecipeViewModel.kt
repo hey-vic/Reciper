@@ -63,13 +63,12 @@ class AddEditRecipeViewModel @Inject constructor(
                 repository.getRecipeById(recipeId)?.let { recipe ->
                     title = recipe.title
                     details = recipe.details
-                    cookingTime = recipe.cookingTime ?: ""
+                    cookingTime = recipe.cookingTime
                     locallySavedImageUri = recipe.relatedImageUri?.let { Uri.parse(it) }
                     this@AddEditRecipeViewModel.recipe = recipe
                 }
                 previouslySavedIngredients = repository
                     .getIngredientsOfRecipeByRecipeId(recipeId)
-                    .first()
                     .ingredients
                 previouslySavedIngredients.forEach { currentIngredients.add(it) }
             }
@@ -128,7 +127,7 @@ class AddEditRecipeViewModel @Inject constructor(
                                 action = "Undo"
                             )
                         )
-                        sendUiEvent(UIEvent.PopBackStack)
+                        sendUiEvent(UIEvent.PopToMain)
                     }
                 }
             }
@@ -147,10 +146,12 @@ class AddEditRecipeViewModel @Inject constructor(
                         sendUiEvent(UIEvent.ShowSnackbar("Recipe ingredients can't be empty"))
                         return@launch
                     }
-
                     if (!isTitleUnique) {
                         sendUiEvent(UIEvent.ShowSnackbar("Recipe with this title already exists"))
                         return@launch
+                    }
+                    cookingTime?.let { time ->
+                        if (time.isBlank()) cookingTime = null
                     }
 
                     val newRecipe = Recipe(

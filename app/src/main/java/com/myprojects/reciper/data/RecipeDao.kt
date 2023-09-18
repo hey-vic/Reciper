@@ -54,7 +54,7 @@ interface RecipeDao {
 
     @Transaction
     @Query("SELECT * FROM recipe WHERE recipeId = :recipeId")
-    suspend fun getIngredientsOfRecipeByRecipeId(recipeId: Long): List<RecipeWithIngredients>
+    suspend fun getIngredientsOfRecipeByRecipeId(recipeId: Long): RecipeWithIngredients
 
     @Transaction
     @Query("SELECT * FROM recipe")
