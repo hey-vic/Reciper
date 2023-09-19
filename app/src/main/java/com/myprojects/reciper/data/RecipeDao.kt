@@ -49,6 +49,9 @@ interface RecipeDao {
     @Query("SELECT * FROM recipe")
     fun getAllRecipes(): Flow<List<Recipe>>
 
+    @Query("SELECT relatedImageUri FROM recipe")
+    suspend fun getAllImageUris(): List<String?>
+
     @Query("DELETE FROM recipe WHERE recipeId = :recipeId")
     suspend fun deleteRecipeById(recipeId: Long)
 

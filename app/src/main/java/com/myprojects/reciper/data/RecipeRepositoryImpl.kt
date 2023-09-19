@@ -38,6 +38,10 @@ class RecipeRepositoryImpl(
         return dao.getAllRecipes()
     }
 
+    override suspend fun getAllImageUris(): List<String?> {
+        return dao.getAllImageUris()
+    }
+
     override suspend fun deleteRecipeById(recipeId: Long) {
         dao.deleteRecipeById(recipeId)
     }

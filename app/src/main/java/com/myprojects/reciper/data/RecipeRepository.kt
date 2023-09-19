@@ -23,6 +23,8 @@ interface RecipeRepository {
 
     fun getAllRecipes(): Flow<List<Recipe>>
 
+    suspend fun getAllImageUris(): List<String?>
+
     suspend fun deleteRecipeById(recipeId: Long)
 
     suspend fun getIngredientsOfRecipeByRecipeId(recipeId: Long): RecipeWithIngredients

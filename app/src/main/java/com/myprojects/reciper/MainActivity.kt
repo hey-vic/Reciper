@@ -25,8 +25,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.myprojects.reciper.ui.add_edit_recipe.AddEditRecipeScreen
 import com.myprojects.reciper.ui.recipes_list.RecipesListScreen
+import com.myprojects.reciper.ui.shared.CachedImagesCleaningWorker
 import com.myprojects.reciper.ui.shared.SharedScreen
 import com.myprojects.reciper.ui.shared.SharedViewModel
 import com.myprojects.reciper.ui.theme.ReciperTheme
@@ -37,6 +41,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
@@ -56,6 +61,18 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 val sharedViewModel: SharedViewModel = hiltViewModel()
+
+                val downloadRequest = PeriodicWorkRequestBuilder<CachedImagesCleaningWorker>(
+                    2,
+                    TimeUnit.HOURS
+                ).build()
+                val workManager = WorkManager.getInstance(applicationContext)
+                workManager.enqueueUniquePeriodicWork(
+                    "CacheImagesCleaningUniqueWork",
+                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                    downloadRequest
+                )
+
                 Scaffold(
                     snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState) {
