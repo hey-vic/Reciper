@@ -18,4 +18,6 @@ sealed interface UIEvent {
         val ingredients: List<Ingredient>,
         val imageUri: Uri?
     ) : UIEvent
+
+    data class ShareRecipe(val recipe: Recipe, val ingredients: List<Ingredient>) : UIEvent
 }

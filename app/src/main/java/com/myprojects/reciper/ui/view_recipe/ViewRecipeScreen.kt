@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.myprojects.reciper.R
+import com.myprojects.reciper.data.entities.Ingredient
+import com.myprojects.reciper.data.entities.Recipe
 import com.myprojects.reciper.ui.shared.components.CustomToolbar
 import com.myprojects.reciper.ui.theme.montserratFamily
 import com.myprojects.reciper.util.UIEvent
@@ -57,7 +59,8 @@ fun ViewRecipeScreen(
     onPopBackStack: () -> Unit,
     viewModel: ViewRecipeViewModel = hiltViewModel(),
     showSnackbar: (String, String?, () -> Unit) -> Unit,
-    onNavigate: (UIEvent.Navigate) -> Unit
+    onNavigate: (UIEvent.Navigate) -> Unit,
+    onRecipeShare: (Recipe, List<Ingredient>) -> Unit
 ) {
 
     val recipe by viewModel.recipe.collectAsState()
@@ -75,6 +78,7 @@ fun ViewRecipeScreen(
                     ) {}
                 }
 
+                is UIEvent.ShareRecipe -> onRecipeShare(event.recipe, event.ingredients)
                 is UIEvent.Navigate -> onNavigate(event)
                 else -> Unit
             }

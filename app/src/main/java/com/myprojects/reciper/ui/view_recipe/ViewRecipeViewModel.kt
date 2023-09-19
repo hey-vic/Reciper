@@ -54,7 +54,9 @@ class ViewRecipeViewModel @Inject constructor(
     fun onEvent(event: ViewRecipeEvent) {
         when (event) {
             is ViewRecipeEvent.OnExportRecipeClick -> {
-                sendUiEvent(UIEvent.ShowSnackbar("Not implemented"))
+                recipe.value?.let { recipe ->
+                    sendUiEvent(UIEvent.ShareRecipe(recipe, ingredients.value))
+                }
             }
 
             is ViewRecipeEvent.OnEditRecipeClick -> {

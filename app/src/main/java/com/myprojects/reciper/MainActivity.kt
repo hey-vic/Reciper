@@ -1,5 +1,6 @@
 package com.myprojects.reciper
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -18,6 +19,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -28,6 +31,8 @@ import androidx.navigation.navArgument
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.myprojects.reciper.data.entities.Ingredient
+import com.myprojects.reciper.data.entities.Recipe
 import com.myprojects.reciper.ui.add_edit_recipe.AddEditRecipeScreen
 import com.myprojects.reciper.ui.recipes_list.RecipesListScreen
 import com.myprojects.reciper.ui.shared.CachedImagesCleaningWorker
@@ -156,6 +161,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigate = {
                                     navController.navigate(it.route)
+                                },
+                                onRecipeShare = { recipe, ingredients ->
+                                    shareRecipe(recipe, ingredients)
                                 }
                             )
                         }
@@ -163,6 +171,37 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun shareRecipe(recipe: Recipe, ingredients: List<Ingredient>) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+
+            type = if (recipe.relatedImageUri != null) {
+                val imageUri = FileProvider.getUriForFile(
+                    this@MainActivity,
+                    "com.myprojects.reciper.provider",  //(use your app signature + ".provider" )
+                    recipe.relatedImageUri.toUri().toFile()
+                )
+                putExtra(Intent.EXTRA_STREAM, imageUri)
+                "image/*"
+            } else {
+                "text/plain"
+            }
+
+            val cookingTimeText = if (recipe.cookingTime != null) {
+                "Cooking time: ${recipe.cookingTime}\n"
+            } else ""
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "${recipe.title}\n${cookingTimeText}" +
+                        "Ingredients: ${ingredients.joinToString { it.ingredientName }}\n" +
+                        recipe.details
+            )
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
     private fun savePhotoToInternalStorage(filename: String, uri: Uri): Uri? {
